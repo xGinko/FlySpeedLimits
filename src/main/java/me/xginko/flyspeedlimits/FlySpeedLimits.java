@@ -97,10 +97,7 @@ public final class FlySpeedLimits extends JavaPlugin {
         bStats = new Metrics(instance, 23725);
         Permissions.registerAll(getServer().getPluginManager());
 
-        try {
-            getDataFolder().mkdirs();
-        } catch (Exception e) {
-            logger.error("Failed to create plugin directory! Cannot enable!", e);
+        if (!reloadPlugin()) {
             getServer().getPluginManager().disablePlugin(this);
             return;
         }
