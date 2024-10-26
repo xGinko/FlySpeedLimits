@@ -6,6 +6,7 @@ import org.bukkit.plugin.PluginManager;
 
 public enum Permissions {
 
+    // TODO: Bypass permissions for each flight type
     BYPASS(new Permission("speedlimit.bypass", PermissionDefault.FALSE)),
 
     RELOAD_CMD(new Permission("speedlimit.cmd.reload", PermissionDefault.OP)),

@@ -5,10 +5,10 @@ import io.github.retrooper.packetevents.factory.spigot.SpigotPacketEventsBuilder
 import me.xginko.flyspeedlimits.commands.PluginYMLCmd;
 import me.xginko.flyspeedlimits.config.Config;
 import me.xginko.flyspeedlimits.config.LanguageCache;
-import me.xginko.flyspeedlimits.manager.PlayerManager;
 import me.xginko.flyspeedlimits.modules.SpeedLimitModule;
 import me.xginko.flyspeedlimits.struct.Permissions;
 import me.xginko.flyspeedlimits.utils.KyoriUtil;
+import me.xginko.flyspeedlimits.utils.tickdata.TickReporter;
 import net.kyori.adventure.platform.bukkit.BukkitAudiences;
 import net.kyori.adventure.text.logger.slf4j.ComponentLogger;
 import org.apache.logging.log4j.Level;
@@ -40,29 +40,17 @@ import java.util.zip.ZipEntry;
 
 public final class FlySpeedLimits extends JavaPlugin {
 
-    /**
-     * TODO:
-     * Add module to cancel chunk generation if they are being caused by flying player
-     * -> onChunkLoad: is new chunk and within flying player distance?
-     * Add bypass permissions
-     * Per world configuration
-     * -> per y-level configuration so ceiling, floor, etc can be configured
-     * -> distance to spawn configuration
-     * Burst/Phase mode:
-     * -> on sprint while flying, go faster, don't load any chunks
-     */
-
     private static FlySpeedLimits instance;
     private static Map<String, LanguageCache> languageCacheMap;
     private static Config config;
+
     private static CommandRegistration commandRegistration;
     private static GracefulScheduling scheduling;
+    private static TickReporter tickReporter;
     private static BukkitAudiences audiences;
     private static ComponentLogger logger;
+
     private static Metrics bStats;
-
-    private PlayerManager playerManager;
-
     private static boolean isPacketEventsInstalled;
 
     @Override
@@ -159,6 +147,10 @@ public final class FlySpeedLimits extends JavaPlugin {
         return config;
     }
 
+    public static TickReporter getTickReporter() {
+        return tickReporter;
+    }
+
     public static CommandRegistration cmdRegistration() {
         return commandRegistration;
     }
@@ -191,9 +183,13 @@ public final class FlySpeedLimits extends JavaPlugin {
     public boolean reloadConfiguration() {
         try {
             Files.createDirectories(getDataFolder().toPath());
+
             config = new Config();
+            tickReporter = TickReporter.create(this, config.tpsCacheTime);
+
             SpeedLimitModule.reloadModules();
             PluginYMLCmd.reloadCommands();
+
             return config.saveConfig();
         } catch (Exception e) {
             logger.error("Error loading config!", e);

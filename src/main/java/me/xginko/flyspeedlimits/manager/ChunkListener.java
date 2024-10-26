@@ -4,7 +4,7 @@ import me.xginko.flyspeedlimits.FlySpeedLimits;
 import me.xginko.flyspeedlimits.events.WrappedPlayerUpdateEvent;
 import me.xginko.flyspeedlimits.struct.Disableable;
 import me.xginko.flyspeedlimits.struct.Enableable;
-import me.xginko.flyspeedlimits.utils.GeneralUtil;
+import me.xginko.flyspeedlimits.utils.Crafty;
 import me.xginko.flyspeedlimits.utils.MathHelper;
 import org.bukkit.Chunk;
 import org.bukkit.entity.Player;
@@ -20,7 +20,7 @@ import java.util.UUID;
 
 public class ChunkListener implements Enableable, Disableable, Listener {
 
-    private static final boolean GET_INHABITED_TIME_AVAILABLE = GeneralUtil.hasMethod(Chunk.class, "getInhabitedTime");
+    private static final boolean GET_INHABITED_TIME_AVAILABLE = Crafty.hasMethod(Chunk.class, "getInhabitedTime");
 
     private AlternativeNewChunksListener altNewChunksListener;
 

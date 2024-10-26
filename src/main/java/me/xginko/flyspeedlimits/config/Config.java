@@ -6,6 +6,7 @@ import me.xginko.flyspeedlimits.FlySpeedLimits;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
+import java.time.Duration;
 import java.util.List;
 import java.util.Locale;
 
@@ -13,7 +14,15 @@ public final class Config {
 
     private final @NotNull ConfigFile configFile;
 
+    /**
+     * TODO:
+     * Per world configuration
+     * -> per y-level configuration so ceiling, floor, etc can be configured
+     * -> distance to spawn configuration
+     */
+
     public final @NotNull Locale default_locale;
+    public final Duration tpsCacheTime;
     public final long checkIntervalMillis, newChunkMaxInhTimeTicks;
     public final boolean auto_lang;
 
@@ -37,7 +46,7 @@ public final class Config {
                 based on what locale their client is set to.\s
                 This of course requires that there is a translation file\s
                 available for that locale inside the plugins lang folder.""");
-
+        this.tpsCacheTime = Duration.ofMillis(getLong("general.tps-cache-time-millis", 500));
         this.checkIntervalMillis = getLong("general.check-interval-millis", 1000L);
         this.newChunkMaxInhTimeTicks = getLong("general.new-chunks-max-inhabited-time-ticks", 200L);
     }
@@ -50,6 +59,10 @@ public final class Config {
             FlySpeedLimits.logger().error("Failed to save config file!", e);
             return false;
         }
+    }
+
+    public @NotNull ConfigFile master() {
+        return configFile;
     }
 
     public boolean getBoolean(@NotNull String path, boolean def, @NotNull String comment) {

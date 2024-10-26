@@ -6,10 +6,6 @@ import org.bukkit.event.Listener;
 
 public class BoatFlyModule extends SpeedLimitModule implements Listener {
 
-    /**
-     * implement boatfly for now, do abstraction later when learnt from that
-     */
-
     public BoatFlyModule() {
         super("speeds.boat", false);
     }

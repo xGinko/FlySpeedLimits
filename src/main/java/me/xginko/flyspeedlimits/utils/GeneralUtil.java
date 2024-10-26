@@ -1,6 +1,5 @@
 package me.xginko.flyspeedlimits.utils;
 
-import org.checkerframework.checker.nullness.qual.Nullable;
 import org.jetbrains.annotations.NotNull;
 
 import java.time.Duration;
@@ -25,20 +24,6 @@ public class GeneralUtil {
             return String.format("%02dm %02ds", minutes, (int) (duration.getSeconds() % 60));
         } else {
             return String.format("%02ds", (int) (duration.getSeconds() % 60));
-        }
-    }
-
-    public static boolean hasMethod(final @Nullable Class<?> holderClass, final String methodName, final Class<?>... parameterClasses) {
-        if (holderClass == null) return false;
-        for (final Class<?> parameterClass : parameterClasses) {
-            if (parameterClass == null) return false;
-        }
-
-        try {
-            holderClass.getMethod(methodName, parameterClasses);
-            return true;
-        } catch (final NoSuchMethodException e) {
-            return false;
         }
     }
 }

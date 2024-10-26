@@ -1,6 +1,7 @@
 plugins {
     java
     id("com.gradleup.shadow") version ("8.3.2")
+    id("io.papermc.paperweight.userdev") version ("1.7.4")
 }
 
 group = "me.xginko"
@@ -32,7 +33,8 @@ repositories {
 }
 
 dependencies {
-    compileOnly("io.papermc.paper:paper-api:1.21.1-R0.1-SNAPSHOT")
+    paperweight.foliaDevBundle("1.20.6-R0.1-SNAPSHOT");
+
     compileOnly("com.github.retrooper:packetevents-spigot:2.5.0")
     compileOnly("org.apache.logging.log4j:log4j-core:2.23.1")
 
