@@ -111,7 +111,6 @@ public class PlayerManager extends PacketListenerAbstract implements Enableable,
     @Override
     public void onPacketReceive(PacketReceiveEvent event) {
         if (event.getConnectionState() != ConnectionState.PLAY) return;
-        if (event.getUser() == null) return;
         if (!playerMap.containsKey(event.getUser().getUUID())) return;
 
         if (event.getPacketType() == PacketType.Play.Client.VEHICLE_MOVE) {
