@@ -4,6 +4,7 @@ import me.xginko.flyspeedlimits.FlySpeedLimits;
 import me.xginko.flyspeedlimits.commands.BaseCommand;
 import me.xginko.flyspeedlimits.utils.KyoriUtil;
 import me.xginko.flyspeedlimits.struct.Permissions;
+import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.command.Command;
@@ -26,18 +27,19 @@ public class ReloadSubCmd extends BaseCommand {
 
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
+        Audience audience = FlySpeedLimits.audiences().sender(sender);
+
         if (!sender.hasPermission(Permissions.RELOAD_CMD.bukkit())) {
-            sender.sendMessage(FlySpeedLimits.getLang(sender).cmd_no_permission);
+            FlySpeedLimits.getLang(sender).cmd_no_permission.forEach(audience::sendMessage);
             return true;
         }
 
-        sender.sendMessage(Component.empty());
-        sender.sendMessage(Component.text("Reloading ...").color(NamedTextColor.WHITE));
-        FlySpeedLimits plugin = FlySpeedLimits.getInstance();
-        plugin.getServer().getAsyncScheduler().runNow(plugin, reload -> {
+        audience.sendMessage(Component.empty());
+        audience.sendMessage(Component.text("Reloading ...").color(NamedTextColor.WHITE));
+        FlySpeedLimits.scheduling().asyncScheduler().run(() -> {
             FlySpeedLimits.getInstance().reloadPlugin();
-            sender.sendMessage(Component.text("Reload complete.").color(KyoriUtil.ginkoblue()));
-            sender.sendMessage(Component.empty());
+            audience.sendMessage(Component.text("Reload complete.").color(KyoriUtil.ginkoblue()));
+            audience.sendMessage(Component.empty());
         });
 
         return true;

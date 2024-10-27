@@ -1,6 +1,5 @@
-package me.xginko.flyspeedlimits.modules.boatfly;
+package me.xginko.flyspeedlimits.modules;
 
-import me.xginko.flyspeedlimits.modules.SpeedLimitModule;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 

@@ -4,6 +4,7 @@ import me.xginko.flyspeedlimits.FlySpeedLimits;
 import me.xginko.flyspeedlimits.commands.BaseCommand;
 import me.xginko.flyspeedlimits.utils.KyoriUtil;
 import me.xginko.flyspeedlimits.struct.Permissions;
+import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.event.ClickEvent;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -28,14 +29,16 @@ public class VersionSubCmd extends BaseCommand {
 
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
+        Audience audience = FlySpeedLimits.audiences().sender(sender);
+
         if (!sender.hasPermission(Permissions.VERSION_CMD.bukkit())) {
-            sender.sendMessage(FlySpeedLimits.getLang(sender).cmd_no_permission);
+            FlySpeedLimits.getLang(sender).cmd_no_permission.forEach(audience::sendMessage);
             return true;
         }
 
         PluginDescriptionFile pluginYML = FlySpeedLimits.getInstance().getDescription();
 
-        sender.sendMessage(Component.newline()
+        audience.sendMessage(Component.newline()
                 .append(
                         Component.text(String.join(" ", pluginYML.getName(), pluginYML.getVersion()))
                                 .color(KyoriUtil.ginkoblue())

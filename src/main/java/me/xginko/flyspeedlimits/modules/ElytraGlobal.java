@@ -1,14 +1,16 @@
-package me.xginko.flyspeedlimits.modules.elytra;
+package me.xginko.flyspeedlimits.modules;
 
 import me.xginko.flyspeedlimits.FlySpeedLimits;
-import me.xginko.flyspeedlimits.modules.SpeedLimitModule;
+import me.xginko.flyspeedlimits.manager.PlayerManager;
+import me.xginko.flyspeedlimits.manager.WrappedPlayer;
+import me.xginko.flyspeedlimits.utils.GeneralUtil;
+import me.xginko.flyspeedlimits.utils.MaterialUtil;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerMoveEvent;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.PlayerInventory;
 
 public class ElytraGlobal extends SpeedLimitModule implements Listener {
 
@@ -53,39 +55,39 @@ public class ElytraGlobal extends SpeedLimitModule implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     private void on(PlayerMoveEvent event) {
+        Player player = event.getPlayer();
+
         if (global_DenyElytra) {
-            // Deny elytra
+            event.setCancelled(true);
             return;
         }
 
         if (global_DenyOnLowTPS && FlySpeedLimits.getTickReporter().getTPS() <= global_DenyElytraTPS) {
-            // Deny elytra
-
+            event.setCancelled(true);
             if (global_AlsoRemoveOnLowTPS) {
-                PlayerInventory playerInv = player.getInventory();
-                if (MaterialUtil.isElytra(playerInv.getChestplate())) {
-                    ItemStack elytra = playerInv.getChestplate();
-                    playerInv.setChestplate(null);
-                    player.getWorld().dropItemNaturally(playerLoc, elytra);
+                if (MaterialUtil.isElytra(player.getInventory().getChestplate())) {
+                    GeneralUtil.dropChestplate(player);
                 }
             }
-
             return;
         }
 
-        if ( ) { // If is in new chunks
+        WrappedPlayer wrappedPlayer = PlayerManager.getPlayer(event);
+
+        if (wrappedPlayer.isInNewChunks()) { // If is in new chunks
             // Speed New Chunks
             if (global_EnableBursting && FlySpeedLimits.getTickReporter().getTPS() >= global_BurstNewChunk_TPS) {
                 // Burst Speed New Chunks
-                if (flySpeed > global_BurstSpeedNewChunks) {
+                if (wrappedPlayer.getXZSpeedSquared() > global_BurstSpeedNewChunks) {
                     // Too fast
+                    event.setCancelled(true);
 
                 } else {
 
                 }
             } else {
                 // Normal Speed New Chunks
-                if (flySpeed > global_SpeedNewChunks) {
+                if (wrappedPlayer.getXZSpeedSquared() > global_SpeedNewChunks) {
 
                 } else {
                     // Speed old chunks
@@ -96,7 +98,7 @@ public class ElytraGlobal extends SpeedLimitModule implements Listener {
             // Speed Old Chunks
             if (global_EnableBursting && FlySpeedLimits.getTickReporter().getTPS() >= global_BurstOldChunk_TPS) {
                 // Burst Speed Old Chunks
-                if (flySpeed > global_BurstSpeedOldChunks) {
+                if (wrappedPlayer.getXZSpeedSquared() > global_BurstSpeedOldChunks) {
                     // Too fast
 
                 } else {
@@ -104,7 +106,7 @@ public class ElytraGlobal extends SpeedLimitModule implements Listener {
                 }
             } else {
                 // Normal Speed Old Chunks
-                if (flySpeed > global_SpeedOldChunks) {
+                if (wrappedPlayer.getXZSpeedSquared() > global_SpeedOldChunks) {
 
                 } else {
 

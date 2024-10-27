@@ -5,6 +5,7 @@ import com.github.benmanes.caffeine.cache.Caffeine;
 
 import java.time.Duration;
 
+@SuppressWarnings("DataFlowIssue")
 public final class FallbackTickReporter implements TickReporter {
 
     private final Cache<Boolean, Double> cache;

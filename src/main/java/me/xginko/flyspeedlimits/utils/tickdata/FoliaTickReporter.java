@@ -10,6 +10,7 @@ import me.xginko.flyspeedlimits.utils.Crafty;
 
 import java.time.Duration;
 
+@SuppressWarnings("DataFlowIssue")
 public final class FoliaTickReporter implements TickReporter {
 
     private final Cache<TickRegionScheduler.RegionScheduleHandle, Double> tps_cache, mspt_cache;

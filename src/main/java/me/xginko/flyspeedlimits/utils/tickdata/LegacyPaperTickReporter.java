@@ -8,6 +8,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import java.time.Duration;
 
+@SuppressWarnings("DataFlowIssue")
 public final class LegacyPaperTickReporter implements TickReporter {
 
     private final Server server;
