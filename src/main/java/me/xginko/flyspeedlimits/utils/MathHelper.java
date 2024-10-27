@@ -4,16 +4,19 @@ import me.xginko.flyspeedlimits.FlySpeedLimits;
 import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.World;
-import org.bukkit.util.NumberConversions;
 
 public class MathHelper {
+
+    public static double toDistancePerMillis(double distance, long millis) {
+        return (distance / FlySpeedLimits.config().checkIntervalMillis) * millis;
+    }
 
     public static double getBlockDistanceTo00Squared(Location location) {
         return square(location.getX(), location.getZ());
     }
 
     public static double getBlockDistanceYSquared(Location from, Location to) {
-        return NumberConversions.square(from.getY() - to.getY());
+        return square(from.getY() - to.getY());
     }
 
     public static double getBlockDistanceXZSquared(Location from, Location to) {
@@ -74,10 +77,6 @@ public class MathHelper {
                 (location1.getBlockZ() >> 4) - (location2.getBlockZ() >> 4));
     }
 
-    public static double toDistancePerMillis(double distance, long millis) {
-        return (distance / FlySpeedLimits.config().checkIntervalMillis) * millis;
-    }
-
     public static float quakeSqrt(float x) {
         float xHalf = 0.5F * x;
         int i = Float.floatToIntBits(x); // Get the bits of the float
@@ -87,13 +86,17 @@ public class MathHelper {
         return 1 / x;                    // Return the approximate square root
     }
 
+    public static double square(double delta) {
+        return delta * delta;
+    }
+
     // Requires -XX:+UseFMA in flags
-    private static double square(double deltaX, double deltaZ) {
+    public static double square(double deltaX, double deltaZ) {
         return org.joml.Math.fma(deltaX, deltaX, deltaZ * deltaZ);
     }
 
     // Requires -XX:+UseFMA in flags
-    private static double square(double deltaX, double deltaY, double deltaZ) {
+    public static double square(double deltaX, double deltaY, double deltaZ) {
         return org.joml.Math.fma(deltaX, deltaX, org.joml.Math.fma(deltaY, deltaY, deltaZ * deltaZ));
     }
 }
