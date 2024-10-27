@@ -13,7 +13,6 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.event.world.ChunkLoadEvent;
-import org.bukkit.util.NumberConversions;
 
 import java.util.Map;
 import java.util.UUID;
@@ -47,7 +46,7 @@ public class ChunkListener implements Enableable, Disableable, Listener {
     private void on(WrappedPlayerUpdateEvent event) {
         WrappedPlayer wrappedPlayer = event.getWrappedPlayer();
 
-        if (ChunkListener.GET_INHABITED_TIME_AVAILABLE) {
+        if (GET_INHABITED_TIME_AVAILABLE) {
             wrappedPlayer.setInNewChunks(wrappedPlayer.player
                     .getChunk().getInhabitedTime() <= FlySpeedLimits.config().newChunkMaxInhTimeTicks);
         }
@@ -73,7 +72,7 @@ public class ChunkListener implements Enableable, Disableable, Listener {
         }
 
         private boolean isInRenderDistance(Chunk chunk, Player player) {
-            return MathHelper.getChunkDistanceSquared(chunk, player.getLocation()) <= NumberConversions.square(player.getViewDistance());
+            return MathHelper.getChunkDistanceSquared(chunk, player.getLocation()) <= MathHelper.square(player.getViewDistance());
         }
 
         @Override
