@@ -42,6 +42,7 @@ dependencies {
     implementation("com.github.thatsmusic99:ConfigurationMaster-API:v2.0.0-rc.1")
     implementation("com.github.ben-manes.caffeine:caffeine:2.9.3")
     implementation("org.reflections:reflections:0.10.2")
+    implementation("org.joml:joml:1.10.8")
 
     implementation("io.papermc:paperlib:1.0.8")
     implementation("space.arim.morepaperlib:morepaperlib:0.4.3")
@@ -91,6 +92,7 @@ tasks {
         relocate("org.bstats", "me.xginko.flyspeedlimits.libs.bstats")
         relocate("com.zaxxer", "me.xginko.flyspeedlimits.libs.zaxxer")
         relocate("net.kyori", "me.xginko.flyspeedlimits.libs.kyori")
+        relocate("org.joml", "me.xginko.flyspeedlimits.libs.joml")
     }
 
     processResources {
