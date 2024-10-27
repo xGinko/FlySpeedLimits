@@ -16,10 +16,10 @@ public class WrappedPlayer {
 
     private @NotNull FlyingState flyingState;
 
-    private double periodicXZDistSquared;
-    private double periodicXZDist;
-    private double periodicYDistSquared;
-    private double periodicYDist;
+    private double blocksPerSecXZSquared;
+    private double blocksPerSecYSquared;
+    private float blocksPerSecXZ;
+    private float blocksPerSecY;
 
     private boolean inNewChunks;
 
@@ -28,10 +28,10 @@ public class WrappedPlayer {
         this.periodicFrom = from;
         this.mostRecentTo = to;
         this.flyingState = FlyingState.NONE;
-        this.periodicXZDistSquared = 0.0D;
-        this.periodicYDistSquared = 0.0D;
-        this.periodicXZDist = 0.0D;
-        this.periodicYDist = 0.0D;
+        this.blocksPerSecXZSquared = 0.0D;
+        this.blocksPerSecYSquared = 0.0D;
+        this.blocksPerSecXZ = 0.0F;
+        this.blocksPerSecY = 0.0F;
         this.inNewChunks = false;
     }
 
@@ -64,33 +64,33 @@ public class WrappedPlayer {
     }
 
     public double getXZSpeedSquared() {
-        return periodicXZDistSquared; // Requires conversion to Blocks per Second
+        return blocksPerSecXZSquared;
     }
 
     public double getYSpeedSquared() {
-        return periodicYDistSquared;
+        return blocksPerSecYSquared;
     }
 
-    public double getXZSpeed() {
-        if (periodicXZDist == -1.0D)
-            periodicXZDist = StrictMath.sqrt(periodicXZDistSquared);
-        return periodicXZDist;
+    public float getXZSpeed() { // Only for making speeds human-readable, therefore accuracy doesn't matter
+        if (blocksPerSecXZ == -1.0D)
+            blocksPerSecXZ = MathHelper.quakeSqrt((float) blocksPerSecXZSquared);
+        return blocksPerSecXZ;
     }
 
-    public double getYSpeed() {
-        if (periodicYDist == -1.0D)
-            periodicYDist = StrictMath.sqrt(periodicYDistSquared);
-        return periodicYDist;
+    public float getYSpeed() {
+        if (blocksPerSecY == -1.0D)
+            blocksPerSecY = MathHelper.quakeSqrt((float) blocksPerSecYSquared);
+        return blocksPerSecY;
     }
 
     protected void doPeriodicUpdate() {
         // Cant be lazy because timing is important
-        periodicXZDistSquared = MathHelper.getBlockDistanceXZSquared(periodicFrom, mostRecentTo);
-        periodicYDistSquared = MathHelper.getBlockDistanceYSquared(periodicFrom, mostRecentTo);
+        blocksPerSecXZSquared = MathHelper.toDistancePerMillis(MathHelper.getBlockDistanceXZSquared(periodicFrom, mostRecentTo), 1000L);
+        blocksPerSecYSquared = MathHelper.toDistancePerMillis(MathHelper.getBlockDistanceYSquared(periodicFrom, mostRecentTo), 1000L);
 
         // Reset for lazy get
-        periodicXZDist = -1.0D;
-        periodicYDist = -1.0D;
+        blocksPerSecXZ = -1.0F;
+        blocksPerSecY = -1.0F;
 
         Bukkit.getPluginManager().callEvent(new WrappedPlayerUpdateEvent(this));
 
