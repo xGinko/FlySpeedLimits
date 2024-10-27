@@ -1,9 +1,9 @@
-name: FlySpeedLimits
+name: '${name}'
 version: '1.0.0'
 main: me.xginko.flyspeedlimits.FlySpeedLimits
 authors: [ xGinko ]
-description: ${project.description}
-website: ${project.url}
+description: '${description}'
+website: '${url}'
 api-version: '1.13'
 folia-supported: true
 softdepend:
@@ -14,4 +14,4 @@ commands:
     usage: /speedlimit [ reload, version ]
     description: Speedlimit commands
     aliases:
-      - slimit
+      - speeds

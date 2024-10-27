@@ -2,6 +2,7 @@ plugins {
     java
     id("com.gradleup.shadow") version ("8.3.2")
     id("io.papermc.paperweight.userdev") version ("1.7.4")
+    id("xyz.wagyourtail.jvmdowngrader") version ("1.2.0")
 }
 
 group = "me.xginko"
@@ -39,7 +40,7 @@ dependencies {
     compileOnly("org.apache.logging.log4j:log4j-core:2.23.1")
 
     implementation("com.github.thatsmusic99:ConfigurationMaster-API:v2.0.0-rc.1")
-    implementation("com.github.ben-manes.caffeine:caffeine:3.1.8")
+    implementation("com.github.ben-manes.caffeine:caffeine:2.9.3")
     implementation("org.reflections:reflections:0.10.2")
 
     implementation("io.papermc:paperlib:1.0.8")
@@ -50,7 +51,7 @@ dependencies {
     implementation("net.kyori:adventure-text-serializer-ansi:4.17.0")
     implementation("net.kyori:adventure-text-logger-slf4j:4.17.0")
     implementation("net.kyori:adventure-text-minimessage:4.17.0")
-    implementation("net.kyori:adventure-platform-bukkit:4.3.3")
+    implementation("net.kyori:adventure-platform-bukkit:4.3.4")
 }
 
 java {
@@ -75,7 +76,6 @@ tasks {
     shadowJar {
         archiveFileName.set("FlySpeedLimits-${version}.jar")
         relocate("io.github.thatsmusic99.configurationmaster", "me.xginko.flyspeedlimits.libs.configmaster")
-        relocate("org.apache.commons.math3", "me.xginko.flyspeedlimits.libs.fastmath")
         relocate("com.github.cryptomorin.xseries", "me.xginko.flyspeedlimits.libs.xseries")
         exclude(
             "com/cryptomorin/xseries/XBiome*",
@@ -104,5 +104,20 @@ tasks {
                     )
             )
         }
+    }
+
+    jar {
+        duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+        dependsOn(shadowJar.get())
+        from(zipTree(shadowJar.get().archiveFile))
+        finalizedBy("shadeDowngradedApi")
+    }
+
+    shadeDowngradedApi {
+        archiveFileName = shadowJar.get().archiveFileName
+        destinationDirectory = projectDir.resolve("build/libs")
+
+        downgradeTo = JavaVersion.VERSION_1_8
+        shadePath = { _ -> "me/xginko/shadow/jvmdowngrader" }
     }
 }
