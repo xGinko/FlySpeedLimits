@@ -35,7 +35,7 @@ public class GeneralUtil {
         ItemStack itemStack = player.getInventory().getChestplate();
         if (itemStack != null) {
             player.getInventory().setChestplate(null);
-            player.getWorld().dropItem(player.getLocation(), itemStack).setOwner(player.getUniqueId());
+            player.getWorld().dropItem(player.getLocation(), itemStack);
         }
     }
 }
