@@ -7,15 +7,14 @@ import me.xginko.flyspeedlimits.config.Config;
 import me.xginko.flyspeedlimits.config.LanguageCache;
 import me.xginko.flyspeedlimits.modules.SpeedLimitModule;
 import me.xginko.flyspeedlimits.struct.Permissions;
-import me.xginko.flyspeedlimits.utils.KyoriUtil;
 import me.xginko.flyspeedlimits.utils.tickdata.TickReporter;
+import net.kyori.adventure.identity.Identity;
 import net.kyori.adventure.platform.bukkit.BukkitAudiences;
 import net.kyori.adventure.text.logger.slf4j.ComponentLogger;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.core.config.Configurator;
 import org.bstats.bukkit.Metrics;
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 import space.arim.morepaperlib.MorePaperLib;
@@ -55,7 +54,6 @@ public final class FlySpeedLimits extends JavaPlugin {
 
     @Override
     public void onLoad() {
-        KyoriUtil.load();
         String shadedLibs = getClass().getPackage().getName() + ".libs";
         Configurator.setLevel(shadedLibs + ".reflections.Reflections", Level.OFF);
         isPacketEventsInstalled = getServer().getPluginManager().getPlugin("packetevents") != null;
@@ -165,7 +163,7 @@ public final class FlySpeedLimits extends JavaPlugin {
     }
 
     public static @NotNull LanguageCache getLang(CommandSender commandSender) {
-        return getLang(commandSender instanceof Player player ? player.locale() : config.default_locale);
+        return getLang(audiences.sender(commandSender).pointers().get(Identity.LOCALE).orElse(FlySpeedLimits.config().default_locale));
     }
 
     public static @NotNull LanguageCache getLang(String lang) {
