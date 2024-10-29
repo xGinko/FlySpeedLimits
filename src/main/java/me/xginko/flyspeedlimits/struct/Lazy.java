@@ -21,7 +21,7 @@ public class Lazy<E> implements Supplier<E> {
         return this.value == null;
     }
 
-    public void reset() {
+    public void clear() {
         this.value = null;
     }
 

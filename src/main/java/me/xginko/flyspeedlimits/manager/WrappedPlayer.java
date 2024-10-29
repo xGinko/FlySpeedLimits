@@ -113,14 +113,14 @@ public class WrappedPlayer {
         distanceYSquared = MathHelper.getBlockDistanceYSquared(periodicFrom, mostRecentTo);
 
         // Reset lazy
-        blocksPerSecXZSquared.reset();
-        blocksPerTickXZSquared.reset();
-        blocksPerSecYSquared.reset();
-        blocksPerTickYSquared.reset();
-        blocksPerSecXZ.reset();
-        blocksPerTickXZ.reset();
-        blocksPerSecY.reset();
-        blocksPerTickY.reset();
+        blocksPerSecXZSquared.clear();
+        blocksPerTickXZSquared.clear();
+        blocksPerSecYSquared.clear();
+        blocksPerTickYSquared.clear();
+        blocksPerSecXZ.clear();
+        blocksPerTickXZ.clear();
+        blocksPerSecY.clear();
+        blocksPerTickY.clear();
 
         Bukkit.getPluginManager().callEvent(new WrappedPlayerUpdateEvent(this));
 
