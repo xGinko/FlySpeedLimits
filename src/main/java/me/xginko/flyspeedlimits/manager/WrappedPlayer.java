@@ -1,11 +1,14 @@
 package me.xginko.flyspeedlimits.manager;
 
+import com.cryptomorin.xseries.XMaterial;
 import com.github.retrooper.packetevents.util.Vector3d;
 import me.xginko.flyspeedlimits.events.WrappedPlayerUpdateEvent;
+import me.xginko.flyspeedlimits.struct.SpeedUnit;
 import me.xginko.flyspeedlimits.utils.MathHelper;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 
 public class WrappedPlayer {
@@ -18,6 +21,7 @@ public class WrappedPlayer {
 
     private double blocksPerSecXZSquared;
     private double blocksPerSecYSquared;
+
     private float blocksPerSecXZ;
     private float blocksPerSecY;
 
@@ -41,6 +45,14 @@ public class WrappedPlayer {
 
     protected static @NotNull WrappedPlayer of(@NotNull Player player) {
         return of(player, player.getLocation().clone(), player.getLocation().clone());
+    }
+
+    public void dropElytra() {
+        ItemStack chestplate = player.getInventory().getChestplate();
+        if (chestplate != null && chestplate.getType() == XMaterial.ELYTRA.parseMaterial()) {
+            player.getInventory().setChestplate(null);
+            player.getWorld().dropItem(player.getLocation(), chestplate);
+        }
     }
 
     public FlyingState getFlyingState() {
@@ -71,7 +83,7 @@ public class WrappedPlayer {
         return blocksPerSecYSquared;
     }
 
-    public float getXZSpeed() { // Only for making speeds human-readable, therefore accuracy doesn't matter
+    public float getXZSpeed() {
         if (blocksPerSecXZ == -1.0D)
             blocksPerSecXZ = MathHelper.quakeSqrt((float) blocksPerSecXZSquared);
         return blocksPerSecXZ;
@@ -85,8 +97,8 @@ public class WrappedPlayer {
 
     protected void doPeriodicUpdate() {
         // Cant be lazy because timing is important
-        blocksPerSecXZSquared = MathHelper.toDistancePerMillis(MathHelper.getBlockDistanceXZSquared(periodicFrom, mostRecentTo), 1000L);
-        blocksPerSecYSquared = MathHelper.toDistancePerMillis(MathHelper.getBlockDistanceYSquared(periodicFrom, mostRecentTo), 1000L);
+        blocksPerSecXZSquared = SpeedUnit.BLOCKS_PER_SECOND.fromDistance(MathHelper.getBlockDistanceXZSquared(periodicFrom, mostRecentTo));
+        blocksPerSecYSquared = SpeedUnit.BLOCKS_PER_SECOND.fromDistance(MathHelper.getBlockDistanceYSquared(periodicFrom, mostRecentTo));
 
         // Reset for lazy get
         blocksPerSecXZ = -1.0F;

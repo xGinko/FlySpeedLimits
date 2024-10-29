@@ -14,13 +14,6 @@ public final class Config {
 
     private final @NotNull ConfigFile configFile;
 
-    /**
-     * TODO:
-     * Per world configuration
-     * -> per y-level configuration so ceiling, floor, etc can be configured
-     * -> distance to spawn configuration
-     */
-
     public final @NotNull Locale default_locale;
     public final Duration tpsCacheTime;
     public final long checkIntervalMillis, newChunkMaxInhTimeTicks;
@@ -38,14 +31,14 @@ public final class Config {
                 .addLine(" ", Title.Pos.CENTER)
                 .addSolidLine());
 
-        this.default_locale = Locale.forLanguageTag(getString("general.default-language", "en_us", """
-                The default language that will be used if auto-language\s
-                is false or no matching language file was found.""").replace("_", "-"));
-        this.auto_lang = getBoolean("general.auto-language", true, """
-                If set to true, the plugin will send messages to players\s
-                based on what locale their client is set to.\s
-                This of course requires that there is a translation file\s
-                available for that locale inside the plugins lang folder.""");
+        this.default_locale = Locale.forLanguageTag(getString("general.default-language", "en_us",
+                "The default language that will be used if auto-language\n" +
+                "is false or no matching language file was found.").replace("_", "-"));
+        this.auto_lang = getBoolean("general.auto-language", true,
+                "If set to true, the plugin will send messages to players\n" +
+                "based on what locale their client is set to.\n" +
+                "This of course requires that there is a translation file\n" +
+                "available for that locale inside the plugins lang folder.");
         this.tpsCacheTime = Duration.ofMillis(getLong("general.tps-cache-time-millis", 500));
         this.checkIntervalMillis = getLong("general.check-interval-millis", 1000L);
         this.newChunkMaxInhTimeTicks = getLong("general.new-chunks-max-inhabited-time-ticks", 200L);

@@ -1,15 +1,10 @@
 package me.xginko.flyspeedlimits.utils;
 
-import me.xginko.flyspeedlimits.FlySpeedLimits;
 import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.World;
 
 public class MathHelper {
-
-    public static double toDistancePerMillis(double distance, long millis) {
-        return (distance / FlySpeedLimits.config().checkIntervalMillis) * millis;
-    }
 
     public static double getBlockDistanceTo00Squared(Location location) {
         return square(location.getX(), location.getZ());
