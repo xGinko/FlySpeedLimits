@@ -3,10 +3,14 @@ package me.xginko.flyspeedlimits.manager;
 import com.cryptomorin.xseries.XMaterial;
 import com.github.retrooper.packetevents.util.Vector3d;
 import io.papermc.lib.PaperLib;
+import me.xginko.flyspeedlimits.FlySpeedLimits;
 import me.xginko.flyspeedlimits.events.WrappedPlayerUpdateEvent;
 import me.xginko.flyspeedlimits.struct.Lazy;
 import me.xginko.flyspeedlimits.struct.SpeedUnit;
 import me.xginko.flyspeedlimits.utils.MathHelper;
+import net.kyori.adventure.sound.Sound;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.title.Title;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -70,6 +74,26 @@ public class WrappedPlayer {
 
     public CompletableFuture<Boolean> teleportAsync(Location location) {
         return PaperLib.teleportAsync(player, location, PlayerTeleportEvent.TeleportCause.PLUGIN);
+    }
+
+    public void sendMessage(Component component) {
+        FlySpeedLimits.audiences().player(player).sendMessage(component);
+    }
+
+    public void sendActionbar(Component component) {
+        FlySpeedLimits.audiences().player(player).sendActionBar(component);
+    }
+
+    public void playSound(Sound sound) {
+        FlySpeedLimits.audiences().player(player).playSound(sound);
+    }
+
+    public void showTitle(Title title) {
+        FlySpeedLimits.audiences().player(player).showTitle(title);
+    }
+
+    public void clearTitle() {
+        FlySpeedLimits.audiences().player(player).clearTitle();
     }
 
     protected double getDistanceXZSquared() {

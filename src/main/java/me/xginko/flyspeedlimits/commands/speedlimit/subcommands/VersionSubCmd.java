@@ -41,13 +41,13 @@ public class VersionSubCmd extends BaseCommand {
         audience.sendMessage(Component.newline()
                 .append(
                         Component.text(String.join(" ", pluginYML.getName(), pluginYML.getVersion()))
-                                .color(KyoriUtil.ginkoblue())
+                                .color(KyoriUtil.GINKOBLUE)
                                 .clickEvent(ClickEvent.openUrl(pluginYML.getWebsite()))
                 )
                 .append(Component.text(" by ").color(NamedTextColor.DARK_GRAY))
                 .append(
                         Component.text(String.join(", ", pluginYML.getAuthors()))
-                                .color(KyoriUtil.ginkoblue())
+                                .color(KyoriUtil.GINKOBLUE)
                                 .clickEvent(ClickEvent.openUrl("https://github.com/xGinko"))
                 )
                 .append(Component.newline())

@@ -38,7 +38,7 @@ public class ReloadSubCmd extends BaseCommand {
         audience.sendMessage(Component.text("Reloading ...").color(NamedTextColor.WHITE));
         FlySpeedLimits.scheduling().asyncScheduler().run(() -> {
             FlySpeedLimits.getInstance().reloadPlugin();
-            audience.sendMessage(Component.text("Reload complete.").color(KyoriUtil.ginkoblue()));
+            audience.sendMessage(Component.text("Reload complete.").color(KyoriUtil.GINKOBLUE));
             audience.sendMessage(Component.empty());
         });
 

@@ -1,39 +1,21 @@
 package me.xginko.flyspeedlimits.utils;
 
+import me.xginko.flyspeedlimits.FlySpeedLimits;
+import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextColor;
-import net.kyori.adventure.text.minimessage.MiniMessage;
-import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
-import net.kyori.adventure.text.minimessage.tag.standard.StandardTags;
+import org.bukkit.command.CommandSender;
 import org.jetbrains.annotations.NotNull;
 
 public class KyoriUtil {
 
-    private static MiniMessage minimessage_playerinput_safe;
-    private static TextColor ginkoblue;
+    public static final TextColor GINKOBLUE = TextColor.color(0, 237, 255);
 
-    public static void load() {
-        ginkoblue = TextColor.color(0, 237, 255);
-        minimessage_playerinput_safe = MiniMessage.builder()
-                .tags(TagResolver.builder()
-                        .resolver(StandardTags.color())
-                        .resolver(StandardTags.decorations())
-                        .resolver(StandardTags.gradient())
-                        .resolver(StandardTags.rainbow())
-                        .build())
-                .build();
+    public static void sendMessage(@NotNull CommandSender sender, @NotNull Component message) {
+        FlySpeedLimits.audiences().sender(sender).sendMessage(message);
     }
 
-    public static void unload() {
-        minimessage_playerinput_safe = null;
-        ginkoblue = null;
-    }
-
-    public static MiniMessage inputSafeMiniMessage() {
-        return minimessage_playerinput_safe;
-    }
-
-    public static TextColor ginkoblue() {
-        return ginkoblue;
+    public static void sendActionBar(@NotNull CommandSender sender, @NotNull Component message) {
+        FlySpeedLimits.audiences().sender(sender).sendActionBar(message);
     }
 
     public static @NotNull String replaceAmpersand(@NotNull String string) {
