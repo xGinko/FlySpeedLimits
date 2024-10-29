@@ -31,11 +31,6 @@ public class ElytraSpeedLimit extends SpeedLimitModule implements Listener {
     }
 
     @Override
-    public boolean shouldEnable() {
-        return true;
-    }
-
-    @Override
     public void disable() {
         HandlerList.unregisterAll(this);
     }
