@@ -65,7 +65,7 @@ public class PlayerManager extends PacketListenerAbstract implements Enableable,
             scheduledFuture = null;
         }
         if (executorService != null) {
-            executorService.close();
+            executorService.shutdown();
             executorService = null;
         }
         if (playerMap != null) {
