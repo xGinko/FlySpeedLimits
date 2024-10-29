@@ -1,28 +1,13 @@
 package me.xginko.flyspeedlimits.modules;
 
-import me.xginko.flyspeedlimits.config.LocationConfig;
-import me.xginko.flyspeedlimits.manager.PlayerManager;
 import me.xginko.flyspeedlimits.manager.WrappedPlayer;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerMoveEvent;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class ElytraSpeedLimit extends SpeedLimitModule implements Listener {
-
-    private final List<LocationConfig> locations;
     
     public ElytraSpeedLimit() {
         super("speeds.elytra", true);
-        this.locations = new ArrayList<>();
-        LocationConfig.addExamples(configPath);
-        for (String key : config.master().getConfigSection(configPath).getKeys(false)) {
-            locations.add(new LocationConfig(configPath + "." + key));
-        }
     }
 
     @Override
@@ -35,56 +20,54 @@ public class ElytraSpeedLimit extends SpeedLimitModule implements Listener {
         HandlerList.unregisterAll(this);
     }
 
-    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
-    private void on(PlayerMoveEvent event) {
-        WrappedPlayer wrappedPlayer = PlayerManager.getPlayer(event);
-        if (!wrappedPlayer.isFlying()) return; // Not sure if I like this
+    @Override
+    public boolean checkPreconditions(WrappedPlayer wrappedPlayer) {
+        return false;
+    }
 
-        for (LocationConfig locationConfig : locations) {
-            if (!locationConfig.appliesAt(wrappedPlayer.player.getLocation())) continue;
+    @Override
+    public void onPlayerFlightDenied(WrappedPlayer wrappedPlayer) {
+        wrappedPlayer.teleportAsync(wrappedPlayer.periodicFrom);
+        wrappedPlayer.dropElytra();
+    }
 
-            if (locationConfig.flight.denyFlight || locationConfig.flight.shouldDenyDueToLag()) {
-                event.setCancelled(true);
-                // Missing config toggle
-                wrappedPlayer.dropElytra();
-                return;
-            }
+    @Override
+    public void onPlayerExceedSpeedNewChunksBurst(WrappedPlayer wrappedPlayer) {
 
-            if (wrappedPlayer.isInNewChunks()) {
-                if (locationConfig.flight.canBurstNewChunks()) {
-                    if (wrappedPlayer.getXZSpeedSquared(locationConfig.flight.speedUnit) > locationConfig.flight.newChunksXZBurstSpeed) {
-                        event.setCancelled(true);
+    }
 
-                    } else {
+    @Override
+    public void onPlayerFlyNewChunksBurst(WrappedPlayer wrappedPlayer) {
 
-                    }
-                } else {
-                    if (wrappedPlayer.getXZSpeedSquared(locationConfig.flight.speedUnit) > locationConfig.flight.newChunksXZSpeed) {
-                        event.setCancelled(true);
+    }
 
-                    } else {
+    @Override
+    public void onPlayerExceedSpeedNewChunks(WrappedPlayer wrappedPlayer) {
 
-                    }
-                }
-            } else {
-                if (locationConfig.flight.canBurstOldChunks()) {
-                    if (wrappedPlayer.getXZSpeedSquared(locationConfig.flight.speedUnit) > locationConfig.flight.oldChunksXZBurstSpeed) {
-                        event.setCancelled(true);
+    }
 
-                    } else {
+    @Override
+    public void onPlayerFlyNewChunks(WrappedPlayer wrappedPlayer) {
 
-                    }
-                } else {
-                    if (wrappedPlayer.getXZSpeedSquared(locationConfig.flight.speedUnit) > locationConfig.flight.oldChunksXZSpeed) {
-                        event.setCancelled(true);
+    }
 
-                    } else {
+    @Override
+    public void onPlayerExceedSpeedOldChunksBurst(WrappedPlayer wrappedPlayer) {
 
-                    }
-                }
-            }
+    }
 
-            return;
-        }
+    @Override
+    public void onPlayerFlyOldChunksBurst(WrappedPlayer wrappedPlayer) {
+
+    }
+
+    @Override
+    public void onPlayerExceedSpeedOldChunks(WrappedPlayer wrappedPlayer) {
+
+    }
+
+    @Override
+    public void onPlayerFlyOldChunks(WrappedPlayer wrappedPlayer) {
+
     }
 }

@@ -3,15 +3,24 @@ package me.xginko.flyspeedlimits.modules;
 import com.google.common.collect.ImmutableSet;
 import me.xginko.flyspeedlimits.FlySpeedLimits;
 import me.xginko.flyspeedlimits.config.Config;
+import me.xginko.flyspeedlimits.config.LocationConfig;
+import me.xginko.flyspeedlimits.manager.PlayerManager;
+import me.xginko.flyspeedlimits.manager.WrappedPlayer;
 import me.xginko.flyspeedlimits.struct.Disableable;
 import me.xginko.flyspeedlimits.struct.Enableable;
+import org.bukkit.Location;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
+import org.bukkit.event.player.PlayerMoveEvent;
 import org.reflections.Reflections;
 import org.reflections.scanners.Scanners;
 import space.arim.morepaperlib.scheduling.GracefulScheduling;
 
+import javax.annotation.Nullable;
 import java.lang.reflect.Modifier;
 import java.util.Comparator;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -32,17 +41,19 @@ public abstract class SpeedLimitModule implements Enableable, Disableable {
     }
 
     protected final FlySpeedLimits plugin;
-    protected final Config config;
     protected final GracefulScheduling scheduling;
+    protected final Config config;
+    protected final List<LocationConfig> configuredLocations;
     protected final String configPath, logFormat;
-    protected final boolean enabled_in_config;
+    protected final boolean enabledInConfig;
 
     public SpeedLimitModule(String configPath, boolean defEnabled) {
         this.plugin = FlySpeedLimits.getInstance();
         this.config = FlySpeedLimits.config();
         this.scheduling = FlySpeedLimits.scheduling();
         this.configPath = configPath;
-        this.enabled_in_config = config.getBoolean(configPath + ".enable", defEnabled);
+        this.enabledInConfig = config.getBoolean(configPath + ".enable", defEnabled);
+        this.configuredLocations = LocationConfig.readInOrder(configPath);
         String[] paths = configPath.split("\\.");
         if (paths.length <= 2) {
             this.logFormat = "<" + configPath + "> {}";
@@ -52,7 +63,7 @@ public abstract class SpeedLimitModule implements Enableable, Disableable {
     }
 
     public boolean shouldEnable() {
-        return enabled_in_config;
+        return enabledInConfig && !configuredLocations.isEmpty();
     }
 
     public static void disableAll() {
@@ -75,6 +86,76 @@ public abstract class SpeedLimitModule implements Enableable, Disableable {
         }
 
         ENABLED_MODULES.forEach(Enableable::enable);
+    }
+
+    public abstract boolean checkPreconditions(WrappedPlayer wrappedPlayer);
+    public abstract void onPlayerFlightDenied(WrappedPlayer wrappedPlayer);
+    public abstract void onPlayerExceedSpeedNewChunksBurst(WrappedPlayer wrappedPlayer);
+    public abstract void onPlayerFlyNewChunksBurst(WrappedPlayer wrappedPlayer);
+    public abstract void onPlayerExceedSpeedNewChunks(WrappedPlayer wrappedPlayer);
+    public abstract void onPlayerFlyNewChunks(WrappedPlayer wrappedPlayer);
+    public abstract void onPlayerExceedSpeedOldChunksBurst(WrappedPlayer wrappedPlayer);
+    public abstract void onPlayerFlyOldChunksBurst(WrappedPlayer wrappedPlayer);
+    public abstract void onPlayerExceedSpeedOldChunks(WrappedPlayer wrappedPlayer);
+    public abstract void onPlayerFlyOldChunks(WrappedPlayer wrappedPlayer);
+
+    public @Nullable LocationConfig getConfigAt(Location location) {
+        for (LocationConfig locationConfig : configuredLocations) {
+            if (locationConfig.appliesAt(location)) {
+                return locationConfig;
+            }
+        }
+        return null;
+    }
+
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+    public void on(PlayerMoveEvent event) {
+        WrappedPlayer wrappedPlayer = PlayerManager.getPlayer(event);
+        if (!checkPreconditions(wrappedPlayer)) return;
+
+        LocationConfig locationConfig = getConfigAt(wrappedPlayer.player.getLocation());
+        if (locationConfig == null) return;
+
+        if (locationConfig.flight.denyFlight || locationConfig.flight.shouldDenyDueToLag()) {
+            onPlayerFlightDenied(wrappedPlayer);
+            return;
+        }
+
+        if (wrappedPlayer.isInNewChunks()) {
+            if (locationConfig.flight.canBurstNewChunks()) {
+                if (wrappedPlayer.getXZSpeedSquared(locationConfig.flight.speedUnit) > locationConfig.flight.newChunksXZBurstSpeed) {
+                    onPlayerExceedSpeedNewChunksBurst(wrappedPlayer);
+                } else {
+                    onPlayerFlyNewChunksBurst(wrappedPlayer);
+                }
+            }
+
+            else {
+                if (wrappedPlayer.getXZSpeedSquared(locationConfig.flight.speedUnit) > locationConfig.flight.newChunksXZSpeed) {
+                    onPlayerExceedSpeedNewChunks(wrappedPlayer);
+                } else {
+                    onPlayerFlyNewChunks(wrappedPlayer);
+                }
+            }
+        }
+
+        else {
+            if (locationConfig.flight.canBurstOldChunks()) {
+                if (wrappedPlayer.getXZSpeedSquared(locationConfig.flight.speedUnit) > locationConfig.flight.oldChunksXZBurstSpeed) {
+                    onPlayerExceedSpeedOldChunksBurst(wrappedPlayer);
+                } else {
+                    onPlayerFlyOldChunksBurst(wrappedPlayer);
+                }
+            }
+
+            else {
+                if (wrappedPlayer.getXZSpeedSquared(locationConfig.flight.speedUnit) > locationConfig.flight.oldChunksXZSpeed) {
+                    onPlayerExceedSpeedOldChunks(wrappedPlayer);
+                } else {
+                    onPlayerFlyOldChunks(wrappedPlayer);
+                }
+            }
+        }
     }
 
     protected void error(String message, Throwable throwable) {

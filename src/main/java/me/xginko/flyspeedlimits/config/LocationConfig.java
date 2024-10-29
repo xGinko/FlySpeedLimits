@@ -4,9 +4,11 @@ import io.github.thatsmusic99.configurationmaster.api.ConfigFile;
 import me.xginko.flyspeedlimits.FlySpeedLimits;
 import org.bukkit.Location;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 public class LocationConfig {
@@ -36,7 +38,7 @@ public class LocationConfig {
                 && location.getZ() >= minZ && location.getZ() <= maxZ;
     }
 
-    public static void addExamples(String configPath) {
+    public static List<LocationConfig> readInOrder(String configPath) {
         ConfigFile configFile = FlySpeedLimits.config().master();
         // Spawn
         configFile.addExample(configPath + ".spawn.locational-conditions.worlds",
@@ -65,6 +67,11 @@ public class LocationConfig {
         configFile.addExample(configPath + ".global.locational-conditions.min-y", -30_000_000);
         configFile.addExample(configPath + ".global.locational-conditions.max-z", 30_000_000);
         configFile.addExample(configPath + ".global.locational-conditions.min-z", -30_000_000);
+
+        List<LocationConfig> locationConfigs = new ArrayList<>();
+        for (String key : configFile.getConfigSection(configPath).getKeys(false))
+            locationConfigs.add(new LocationConfig(configPath + "." + key));
+        return locationConfigs;
     }
 }
 

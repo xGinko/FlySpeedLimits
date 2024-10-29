@@ -2,15 +2,19 @@ package me.xginko.flyspeedlimits.manager;
 
 import com.cryptomorin.xseries.XMaterial;
 import com.github.retrooper.packetevents.util.Vector3d;
+import io.papermc.lib.PaperLib;
 import me.xginko.flyspeedlimits.events.WrappedPlayerUpdateEvent;
+import me.xginko.flyspeedlimits.struct.Lazy;
 import me.xginko.flyspeedlimits.struct.SpeedUnit;
 import me.xginko.flyspeedlimits.utils.MathHelper;
-import me.xginko.flyspeedlimits.struct.Lazy;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
+import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.concurrent.CompletableFuture;
 
 public class WrappedPlayer {
 
@@ -62,6 +66,10 @@ public class WrappedPlayer {
             player.getInventory().setChestplate(null);
             player.getWorld().dropItem(player.getLocation(), chestplate);
         }
+    }
+
+    public CompletableFuture<Boolean> teleportAsync(Location location) {
+        return PaperLib.teleportAsync(player, location, PlayerTeleportEvent.TeleportCause.PLUGIN);
     }
 
     protected double getDistanceXZSquared() {
