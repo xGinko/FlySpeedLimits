@@ -1,8 +1,11 @@
 package me.xginko.flyspeedlimits.config;
 
 import me.xginko.flyspeedlimits.FlySpeedLimits;
+import me.xginko.flyspeedlimits.struct.SpeedUnit;
 
 public class FlightConfig {
+
+    public final SpeedUnit speedUnit;
 
     public final double denyTPS, denyMSPT,
             oldChunksXZSpeed, oldChunksXZBurstSpeed, oldChunksYSpeed, oldChunksYBurstSpeed, oldChunksBurstTPS, oldChunksBurstMSPT,
@@ -10,14 +13,20 @@ public class FlightConfig {
 
     public final boolean denyFlight, denyDuringLowTPS, oldChunksXZBurstEnabled, newChunksXZBurstEnabled;
 
-    // Switch for blocks per ticks / blocks per seconds?
-
     public FlightConfig(String configPath) {
         Config config = FlySpeedLimits.config();
         this.denyFlight = config.getBoolean(configPath + ".deny-flight.fully", false);
         this.denyDuringLowTPS = config.getBoolean(configPath + ".deny-flight.during-server-lag.enable", true);
         this.denyTPS = config.getDouble(configPath + ".deny-flight.during-server-lag.tps-limit", 12.0);
         this.denyMSPT = config.getDouble(configPath + ".deny-flight.during-server-lag.mspt-limit", 250.0);
+
+        SpeedUnit configuredUnit;
+        try {
+            configuredUnit = SpeedUnit.valueOf(config.getString(configPath + ".speed-unit", "BLOCKS_PER_TICK"));
+        } catch (IllegalArgumentException e) {
+            configuredUnit = SpeedUnit.BLOCKS_PER_TICK;
+        }
+        this.speedUnit = configuredUnit;
 
         this.oldChunksXZSpeed = config.getDouble(configPath + "old-chunks.speed-xz", 2.4);
         this.oldChunksYSpeed = config.getDouble(configPath + "old-chunks.speed-y", 2.4);

@@ -3,7 +3,6 @@ package me.xginko.flyspeedlimits.modules;
 import me.xginko.flyspeedlimits.config.LocationConfig;
 import me.xginko.flyspeedlimits.manager.PlayerManager;
 import me.xginko.flyspeedlimits.manager.WrappedPlayer;
-import me.xginko.flyspeedlimits.struct.SpeedUnit;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.HandlerList;
@@ -58,14 +57,14 @@ public class ElytraGlobal extends SpeedLimitModule implements Listener {
 
             if (wrappedPlayer.isInNewChunks()) {
                 if (locationConfig.flight.canBurstNewChunks()) {
-                    if (wrappedPlayer.getXZSpeedSquared(SpeedUnit.BLOCKS_PER_TICK) > locationConfig.flight.newChunksXZBurstSpeed) {
+                    if (wrappedPlayer.getXZSpeedSquared(locationConfig.flight.speedUnit) > locationConfig.flight.newChunksXZBurstSpeed) {
                         event.setCancelled(true);
 
                     } else {
 
                     }
                 } else {
-                    if (wrappedPlayer.getXZSpeedSquared(SpeedUnit.BLOCKS_PER_TICK) > locationConfig.flight.newChunksXZSpeed) {
+                    if (wrappedPlayer.getXZSpeedSquared(locationConfig.flight.speedUnit) > locationConfig.flight.newChunksXZSpeed) {
                         event.setCancelled(true);
 
                     } else {
@@ -74,14 +73,14 @@ public class ElytraGlobal extends SpeedLimitModule implements Listener {
                 }
             } else {
                 if (locationConfig.flight.canBurstOldChunks()) {
-                    if (wrappedPlayer.getXZSpeedSquared(SpeedUnit.BLOCKS_PER_TICK) > locationConfig.flight.oldChunksXZBurstSpeed) {
+                    if (wrappedPlayer.getXZSpeedSquared(locationConfig.flight.speedUnit) > locationConfig.flight.oldChunksXZBurstSpeed) {
                         event.setCancelled(true);
 
                     } else {
 
                     }
                 } else {
-                    if (wrappedPlayer.getXZSpeedSquared(SpeedUnit.BLOCKS_PER_TICK) > locationConfig.flight.oldChunksXZSpeed) {
+                    if (wrappedPlayer.getXZSpeedSquared(locationConfig.flight.speedUnit) > locationConfig.flight.oldChunksXZSpeed) {
                         event.setCancelled(true);
 
                     } else {
