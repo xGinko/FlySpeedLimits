@@ -10,7 +10,9 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
+import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public final class LanguageCache {
 
@@ -43,9 +45,7 @@ public final class LanguageCache {
         this.translator = langFile.getString("translator");
 
         this.cmd_no_permission = getListTranslation("cmd.no-permission",
-                List.of("<red>You don't have permission to use this command."));
-
-
+                Collections.singletonList("<red>You don't have permission to use this command."));
 
         try {
             this.langFile.save();
@@ -66,11 +66,11 @@ public final class LanguageCache {
 
     private @NotNull List<Component> getListTranslation(@NotNull String path, @NotNull List<String> defaultTranslation) {
         this.langFile.addDefault(path, defaultTranslation);
-        return this.langFile.getStringList(path).stream().map(KyoriUtil::replaceAmpersand).map(MiniMessage.miniMessage()::deserialize).toList();
+        return this.langFile.getStringList(path).stream().map(KyoriUtil::replaceAmpersand).map(MiniMessage.miniMessage()::deserialize).collect(Collectors.toList());
     }
 
     private @NotNull List<Component> getListTranslation(@NotNull String path, @NotNull List<String> defaultTranslation, @NotNull String comment) {
         this.langFile.addDefault(path, defaultTranslation, comment);
-        return this.langFile.getStringList(path).stream().map(KyoriUtil::replaceAmpersand).map(MiniMessage.miniMessage()::deserialize).toList();
+        return this.langFile.getStringList(path).stream().map(KyoriUtil::replaceAmpersand).map(MiniMessage.miniMessage()::deserialize).collect(Collectors.toList());
     }
 }

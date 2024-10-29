@@ -43,8 +43,8 @@ public class LocationConfig {
                 Arrays.asList("world", "world_nether", "world_the_end"));
         configFile.addExample(configPath + ".spawn.locational-conditions.max-x", 3000);
         configFile.addExample(configPath + ".spawn.locational-conditions.min-x", -3000);
-        configFile.addExample(configPath + ".spawn.locational-conditions.max-y", 3000);
-        configFile.addExample(configPath + ".spawn.locational-conditions.min-y", -3000);
+        configFile.addExample(configPath + ".spawn.locational-conditions.max-y", 30_000_000);
+        configFile.addExample(configPath + ".spawn.locational-conditions.min-y", -30_000_000);
         configFile.addExample(configPath + ".spawn.locational-conditions.max-z", 3000);
         configFile.addExample(configPath + ".spawn.locational-conditions.min-z", -3000);
         // Nether ceiling

@@ -5,6 +5,7 @@ import com.github.retrooper.packetevents.util.Vector3d;
 import me.xginko.flyspeedlimits.events.WrappedPlayerUpdateEvent;
 import me.xginko.flyspeedlimits.struct.SpeedUnit;
 import me.xginko.flyspeedlimits.utils.MathHelper;
+import me.xginko.flyspeedlimits.struct.Lazy;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -18,25 +19,33 @@ public class WrappedPlayer {
     public final @NotNull Location mostRecentTo;
 
     private @NotNull FlyingState flyingState;
-
-    private double blocksPerSecXZSquared;
-    private double blocksPerSecYSquared;
-
-    private float blocksPerSecXZ;
-    private float blocksPerSecY;
-
     private boolean inNewChunks;
+
+    private double distanceXZSquared;
+    private double distanceYSquared;
+
+    private final Lazy<Double> blocksPerSecXZSquared, blocksPerTickXZSquared, blocksPerSecYSquared, blocksPerTickYSquared;
+    private final Lazy<Float> blocksPerSecXZ, blocksPerTickXZ, blocksPerSecY, blocksPerTickY;
 
     private WrappedPlayer(@NotNull Player player, @NotNull Location from, @NotNull Location to) {
         this.player = player;
         this.periodicFrom = from;
         this.mostRecentTo = to;
         this.flyingState = FlyingState.NONE;
-        this.blocksPerSecXZSquared = 0.0D;
-        this.blocksPerSecYSquared = 0.0D;
-        this.blocksPerSecXZ = 0.0F;
-        this.blocksPerSecY = 0.0F;
         this.inNewChunks = false;
+
+        this.distanceXZSquared = 0.0D;
+        this.distanceYSquared = 0.0D;
+
+        this.blocksPerSecXZSquared = Lazy.of(() -> SpeedUnit.BLOCKS_PER_SECOND.fromDistance(distanceXZSquared));
+        this.blocksPerSecXZ = Lazy.of(() -> MathHelper.quakeSqrt(blocksPerSecXZSquared.get().floatValue()));
+        this.blocksPerTickXZSquared = Lazy.of(() -> SpeedUnit.BLOCKS_PER_TICK.fromDistance(distanceXZSquared));
+        this.blocksPerTickXZ = Lazy.of(() -> MathHelper.quakeSqrt(blocksPerTickXZSquared.get().floatValue()));
+
+        this.blocksPerSecYSquared = Lazy.of(() -> SpeedUnit.BLOCKS_PER_SECOND.fromDistance(distanceYSquared));
+        this.blocksPerSecY = Lazy.of(() -> MathHelper.quakeSqrt(blocksPerSecYSquared.get().floatValue()));
+        this.blocksPerTickYSquared = Lazy.of(() -> SpeedUnit.BLOCKS_PER_TICK.fromDistance(distanceYSquared));
+        this.blocksPerTickY = Lazy.of(() -> MathHelper.quakeSqrt(blocksPerTickYSquared.get().floatValue()));
     }
 
     protected static @NotNull WrappedPlayer of(@NotNull Player player, @NotNull Location from, @NotNull Location to) {
@@ -75,34 +84,35 @@ public class WrappedPlayer {
         this.inNewChunks = isInNewChunks;
     }
 
-    public double getXZSpeedSquared() {
-        return blocksPerSecXZSquared;
+    public double getXZSpeedSquared(SpeedUnit speedUnit) {
+        return speedUnit == SpeedUnit.BLOCKS_PER_SECOND ? blocksPerSecXZSquared.get() : blocksPerTickXZSquared.get();
     }
 
-    public double getYSpeedSquared() {
-        return blocksPerSecYSquared;
+    public double getYSpeedSquared(SpeedUnit speedUnit) {
+        return speedUnit == SpeedUnit.BLOCKS_PER_SECOND ? blocksPerSecYSquared.get() : blocksPerTickYSquared.get();
     }
 
-    public float getXZSpeed() {
-        if (blocksPerSecXZ == -1.0D)
-            blocksPerSecXZ = MathHelper.quakeSqrt((float) blocksPerSecXZSquared);
-        return blocksPerSecXZ;
+    public float getXZSpeed(SpeedUnit speedUnit) {
+        return speedUnit == SpeedUnit.BLOCKS_PER_SECOND ? blocksPerSecXZ.get() : blocksPerTickXZ.get();
     }
 
-    public float getYSpeed() {
-        if (blocksPerSecY == -1.0D)
-            blocksPerSecY = MathHelper.quakeSqrt((float) blocksPerSecYSquared);
-        return blocksPerSecY;
+    public float getYSpeed(SpeedUnit speedUnit) {
+        return speedUnit == SpeedUnit.BLOCKS_PER_SECOND ? blocksPerSecY.get() : blocksPerTickY.get();
     }
 
     protected void doPeriodicUpdate() {
-        // Cant be lazy because timing is important
-        blocksPerSecXZSquared = SpeedUnit.BLOCKS_PER_SECOND.fromDistance(MathHelper.getBlockDistanceXZSquared(periodicFrom, mostRecentTo));
-        blocksPerSecYSquared = SpeedUnit.BLOCKS_PER_SECOND.fromDistance(MathHelper.getBlockDistanceYSquared(periodicFrom, mostRecentTo));
+        distanceXZSquared = MathHelper.getBlockDistanceXZSquared(periodicFrom, mostRecentTo);
+        distanceYSquared = MathHelper.getBlockDistanceYSquared(periodicFrom, mostRecentTo);
 
-        // Reset for lazy get
-        blocksPerSecXZ = -1.0F;
-        blocksPerSecY = -1.0F;
+        // Reset lazy
+        blocksPerSecXZSquared.reset();
+        blocksPerTickXZSquared.reset();
+        blocksPerSecYSquared.reset();
+        blocksPerTickYSquared.reset();
+        blocksPerSecXZ.reset();
+        blocksPerTickXZ.reset();
+        blocksPerSecY.reset();
+        blocksPerTickY.reset();
 
         Bukkit.getPluginManager().callEvent(new WrappedPlayerUpdateEvent(this));
 
