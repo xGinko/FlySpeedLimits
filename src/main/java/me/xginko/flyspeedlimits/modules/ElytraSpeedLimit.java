@@ -12,11 +12,11 @@ import org.bukkit.event.player.PlayerMoveEvent;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ElytraGlobal extends SpeedLimitModule implements Listener {
+public class ElytraSpeedLimit extends SpeedLimitModule implements Listener {
 
     private final List<LocationConfig> locations;
     
-    public ElytraGlobal() {
+    public ElytraSpeedLimit() {
         super("speeds.elytra", true);
         this.locations = new ArrayList<>();
         LocationConfig.addExamples(configPath);
