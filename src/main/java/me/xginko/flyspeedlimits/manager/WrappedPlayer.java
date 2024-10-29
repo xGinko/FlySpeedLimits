@@ -37,14 +37,14 @@ public class WrappedPlayer {
         this.distanceXZSquared = 0.0D;
         this.distanceYSquared = 0.0D;
 
-        this.blocksPerSecXZSquared = Lazy.of(() -> SpeedUnit.BLOCKS_PER_SECOND.fromDistance(distanceXZSquared));
+        this.blocksPerSecXZSquared = Lazy.of(() -> SpeedUnit.BLOCKS_PER_SECOND.fromDistance(getDistanceXZSquared()));
         this.blocksPerSecXZ = Lazy.of(() -> MathHelper.quakeSqrt(blocksPerSecXZSquared.get().floatValue()));
-        this.blocksPerTickXZSquared = Lazy.of(() -> SpeedUnit.BLOCKS_PER_TICK.fromDistance(distanceXZSquared));
+        this.blocksPerTickXZSquared = Lazy.of(() -> SpeedUnit.BLOCKS_PER_TICK.fromDistance(getDistanceXZSquared()));
         this.blocksPerTickXZ = Lazy.of(() -> MathHelper.quakeSqrt(blocksPerTickXZSquared.get().floatValue()));
 
-        this.blocksPerSecYSquared = Lazy.of(() -> SpeedUnit.BLOCKS_PER_SECOND.fromDistance(distanceYSquared));
+        this.blocksPerSecYSquared = Lazy.of(() -> SpeedUnit.BLOCKS_PER_SECOND.fromDistance(getDistanceYSquared()));
         this.blocksPerSecY = Lazy.of(() -> MathHelper.quakeSqrt(blocksPerSecYSquared.get().floatValue()));
-        this.blocksPerTickYSquared = Lazy.of(() -> SpeedUnit.BLOCKS_PER_TICK.fromDistance(distanceYSquared));
+        this.blocksPerTickYSquared = Lazy.of(() -> SpeedUnit.BLOCKS_PER_TICK.fromDistance(getDistanceYSquared()));
         this.blocksPerTickY = Lazy.of(() -> MathHelper.quakeSqrt(blocksPerTickYSquared.get().floatValue()));
     }
 
@@ -62,6 +62,14 @@ public class WrappedPlayer {
             player.getInventory().setChestplate(null);
             player.getWorld().dropItem(player.getLocation(), chestplate);
         }
+    }
+
+    protected double getDistanceXZSquared() {
+        return distanceXZSquared;
+    }
+
+    protected double getDistanceYSquared() {
+        return distanceYSquared;
     }
 
     public FlyingState getFlyingState() {
