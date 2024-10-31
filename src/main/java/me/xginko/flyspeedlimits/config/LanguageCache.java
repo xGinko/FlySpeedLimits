@@ -21,6 +21,9 @@ public final class LanguageCache {
 
     public final @NotNull List<Component> cmd_no_permission;
 
+    public final @NotNull Component new_chunks_burst_flight, new_chunks_burst_exceed, new_chunks_flight, new_chunks_exceed,
+        old_chunks_burst_flight, old_chunks_burst_exceed, old_chunks_flight, old_chunks_exceed;
+
     public LanguageCache(@NotNull String langString) throws Exception {
         FlySpeedLimits plugin = FlySpeedLimits.getInstance();
         File langYML = new File(plugin.getDataFolder() + "/lang", langString + ".yml");
@@ -46,6 +49,24 @@ public final class LanguageCache {
 
         this.cmd_no_permission = getListTranslation("cmd.no-permission",
                 Collections.singletonList("<red>You don't have permission to use this command."));
+
+        this.new_chunks_burst_flight = getTranslation("new-chunks.burst-flight.flying",
+                "<gray>Flying %flighttype% in <red>NEW <gray>chunks. Speed: %speed%/%maxspeed% TPS: %tps% MSPT: %mspt%");
+        this.new_chunks_burst_exceed = getTranslation("new-chunks.burst-flight.exceed",
+                "<gray>Flying %flighttype% in <red>NEW <gray>chunks. Speed: <red>%speed%/%maxspeed% <gray>TPS: %tps% MSPT: %mspt%");
+        this.new_chunks_flight = getTranslation("new-chunks.regular-flight.flying",
+                "<gray>Flying %flighttype% in <red>NEW <gray>chunks. Speed: %speed%/%maxspeed% TPS: %tps% MSPT: %mspt%");
+        this.new_chunks_exceed = getTranslation("new-chunks.regular-flight.exceed",
+                "<gray>Flying %flighttype% in <red>NEW <gray>chunks. Speed: <red>%speed%/%maxspeed% <gray>TPS: %tps% MSPT: %mspt%");
+
+        this.old_chunks_burst_flight = getTranslation("old-chunks.burst-flight.flying",
+                "<gray>Flying %flighttype% in <red>OLD <gray>chunks. Speed: %speed%/%maxspeed% TPS: %tps% MSPT: %mspt%");
+        this.old_chunks_burst_exceed = getTranslation("old-chunks.burst-flight.exceed",
+                "<gray>Flying %flighttype% in <red>OLD <gray>chunks. Speed: <red>%speed%/%maxspeed% <gray>TPS: %tps% MSPT: %mspt%");
+        this.old_chunks_flight = getTranslation("old-chunks.regular-flight.flying",
+                "<gray>Flying %flighttype% in <red>OLD <gray>chunks. Speed: %speed%/%maxspeed% TPS: %tps% MSPT: %mspt%");
+        this.old_chunks_exceed = getTranslation("old-chunks.regular-flight.exceed",
+                "<gray>Flying %flighttype% in <red>OLD <gray>chunks. Speed: <red>%speed%/%maxspeed% <gray>TPS: %tps% MSPT: %mspt%");
 
         try {
             this.langFile.save();

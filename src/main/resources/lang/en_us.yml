@@ -1,15 +1,15 @@
 flight-type-disabled: "<red>Flying with this method is currently disabled."
 new-chunks:
   burst-flight:
-    flying: "<gray>Flying in <red>NEW <gray>chunks. Speed: %speed%/%maxspeed% TPS: %tps% MSPT: %mspt%"
-    exceed: "<gray>Flying in <red>NEW <gray>chunks. Speed: <red>%speed%/%maxspeed% <gray>TPS: %tps% MSPT: %mspt%"
+    flying: "<gray>Flying %flighttype% in <red>NEW <gray>chunks. Speed: %speed%/%maxspeed% TPS: %tps% MSPT: %mspt%"
+    exceed: "<gray>Flying %flighttype% in <red>NEW <gray>chunks. Speed: <red>%speed%/%maxspeed% <gray>TPS: %tps% MSPT: %mspt%"
   regular-flight:
-    flying: "<gray>Flying in <red>NEW <gray>chunks. Speed: %speed%/%maxspeed% TPS: %tps% MSPT: %mspt%"
-    exceed: "<gray>Flying in <red>NEW <gray>chunks. Speed: <red>%speed%/%maxspeed% <gray>TPS: %tps% MSPT: %mspt%"
+    flying: "<gray>Flying %flighttype% in <red>NEW <gray>chunks. Speed: %speed%/%maxspeed% TPS: %tps% MSPT: %mspt%"
+    exceed: "<gray>Flying %flighttype% in <red>NEW <gray>chunks. Speed: <red>%speed%/%maxspeed% <gray>TPS: %tps% MSPT: %mspt%"
 old-chunks:
   burst-flight:
-    flying: "<gray>Flying in <green>OLD <gray>chunks. Speed: %speed%/%maxspeed% TPS: %tps% MSPT: %mspt%"
-    exceed: "<gray>Flying in <green>OLD <gray>chunks. Speed: <red>%speed%/%maxspeed% <gray>TPS: %tps% MSPT: %mspt%"
+    flying: "<gray>Flying %flighttype% in <green>OLD <gray>chunks. Speed: %speed%/%maxspeed% TPS: %tps% MSPT: %mspt%"
+    exceed: "<gray>Flying %flighttype% in <green>OLD <gray>chunks. Speed: <red>%speed%/%maxspeed% <gray>TPS: %tps% MSPT: %mspt%"
   regular-flight:
-    flying: "<gray>Flying in <green>OLD <gray>chunks. Speed: %speed%/%maxspeed% TPS: %tps% MSPT: %mspt%"
-    exceed: "<gray>Flying in <green>OLD <gray>chunks. Speed: <red>%speed%/%maxspeed% <gray>TPS: %tps% MSPT: %mspt%"
+    flying: "<gray>Flying %flighttype% in <green>OLD <gray>chunks. Speed: %speed%/%maxspeed% TPS: %tps% MSPT: %mspt%"
+    exceed: "<gray>Flying %flighttype% in <green>OLD <gray>chunks. Speed: <red>%speed%/%maxspeed% <gray>TPS: %tps% MSPT: %mspt%"
