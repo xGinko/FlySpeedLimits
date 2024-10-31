@@ -4,16 +4,12 @@ import me.xginko.flyspeedlimits.manager.WrappedPlayer;
 import org.bukkit.event.HandlerList;
 import org.jetbrains.annotations.NotNull;
 
-public class WrappedPlayerUpdateEvent extends WrappedPlayerEvent {
+public class AsyncWrappedPlayerUpdateEvent extends WrappedPlayerEvent {
 
     private static final @NotNull HandlerList handlers = new HandlerList();
 
-    public WrappedPlayerUpdateEvent(@NotNull WrappedPlayer wrappedPlayer) {
-        super(wrappedPlayer);
-    }
-
-    public WrappedPlayerUpdateEvent(boolean isAsync, @NotNull WrappedPlayer wrappedPlayer) {
-        super(isAsync, wrappedPlayer);
+    public AsyncWrappedPlayerUpdateEvent(@NotNull WrappedPlayer wrappedPlayer) {
+        super(true, wrappedPlayer);
     }
 
     @Override

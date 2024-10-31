@@ -8,11 +8,6 @@ public abstract class WrappedPlayerEvent extends Event {
 
     private final @NotNull WrappedPlayer wrappedPlayer;
 
-    public WrappedPlayerEvent(@NotNull WrappedPlayer wrappedPlayer) {
-        super(true); // Since this gets updated in its own Thread
-        this.wrappedPlayer = wrappedPlayer;
-    }
-
     public WrappedPlayerEvent(boolean isAsync, @NotNull WrappedPlayer wrappedPlayer) {
         super(isAsync);
         this.wrappedPlayer = wrappedPlayer;

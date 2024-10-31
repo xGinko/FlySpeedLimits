@@ -19,15 +19,16 @@ import space.arim.morepaperlib.scheduling.GracefulScheduling;
 import javax.annotation.Nullable;
 import java.lang.reflect.Modifier;
 import java.util.Comparator;
-import java.util.HashSet;
+import java.util.EnumMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 public abstract class SpeedLimitModule implements Enableable, Disableable {
 
     protected static final Set<Class<SpeedLimitModule>> AVAILABLE_MODULES;
-    protected static final Set<SpeedLimitModule> ENABLED_MODULES;
+    protected static final Map<FlightType, SpeedLimitModule> ENABLED_MODULES;
 
     static {
         AVAILABLE_MODULES = new Reflections(SpeedLimitModule.class.getPackage().getName())
@@ -37,67 +38,34 @@ public abstract class SpeedLimitModule implements Enableable, Disableable {
                 .map(clazz -> (Class<SpeedLimitModule>) clazz)
                 .sorted(Comparator.comparing(Class::getSimpleName))
                 .collect(Collectors.collectingAndThen(Collectors.toList(), ImmutableSet::copyOf));
-        ENABLED_MODULES = new HashSet<>();
+        ENABLED_MODULES = new EnumMap<>(FlightType.class);
     }
 
-    protected final FlySpeedLimits plugin;
-    protected final GracefulScheduling scheduling;
-    protected final Config config;
-    protected final List<LocationConfig> configuredLocations;
+    protected final FlySpeedLimits plugin = FlySpeedLimits.getInstance();
+    protected final GracefulScheduling scheduling = FlySpeedLimits.scheduling();
+    protected final Config config = FlySpeedLimits.config();
+
+    protected final FlightType flightType;
     protected final String configPath, logFormat;
+    protected final List<LocationConfig> configuredLocations;
     protected final boolean enabledInConfig;
 
-    public SpeedLimitModule(String configPath, boolean defEnabled) {
-        this.plugin = FlySpeedLimits.getInstance();
-        this.config = FlySpeedLimits.config();
-        this.scheduling = FlySpeedLimits.scheduling();
+    public SpeedLimitModule(FlightType flightType, String configPath, boolean defEnabled) {
+        this.flightType = flightType;
         this.configPath = configPath;
         this.enabledInConfig = config.getBoolean(configPath + ".enable", defEnabled);
         this.configuredLocations = LocationConfig.readInOrder(configPath);
-        String[] paths = configPath.split("\\.");
-        if (paths.length <= 2) {
-            this.logFormat = "<" + configPath + "> {}";
-        } else {
-            this.logFormat = "<" + paths[paths.length - 2] + "." + paths[paths.length - 1] + "> {}";
-        }
+        final String[] paths = configPath.split("\\.");
+        this.logFormat = paths.length <= 2 ? "<" + configPath + "> {}" : "<" + paths[paths.length - 2] + "." + paths[paths.length - 1] + "> {}";
+    }
+
+    public FlightType getFlightType() {
+        return flightType;
     }
 
     public boolean shouldEnable() {
         return enabledInConfig && !configuredLocations.isEmpty();
     }
-
-    public static void disableAll() {
-        ENABLED_MODULES.forEach(Disableable::disable);
-        ENABLED_MODULES.clear();
-    }
-
-    public static void reloadModules() {
-        disableAll();
-
-        for (Class<SpeedLimitModule> moduleClass : AVAILABLE_MODULES) {
-            try {
-                SpeedLimitModule module = moduleClass.getDeclaredConstructor().newInstance();
-                if (module.shouldEnable()) {
-                    ENABLED_MODULES.add(module);
-                }
-            } catch (Throwable t) { // We want to catch everything here if it fails to init
-                FlySpeedLimits.logger().warn("Failed initialising module class '{}'.", moduleClass.getSimpleName(), t);
-            }
-        }
-
-        ENABLED_MODULES.forEach(Enableable::enable);
-    }
-
-    public abstract boolean checkPreconditions(WrappedPlayer wrappedPlayer);
-    public abstract void onPlayerFlightDenied(WrappedPlayer wrappedPlayer);
-    public abstract void onPlayerExceedSpeedNewChunksBurst(WrappedPlayer wrappedPlayer);
-    public abstract void onPlayerFlyNewChunksBurst(WrappedPlayer wrappedPlayer);
-    public abstract void onPlayerExceedSpeedNewChunks(WrappedPlayer wrappedPlayer);
-    public abstract void onPlayerFlyNewChunks(WrappedPlayer wrappedPlayer);
-    public abstract void onPlayerExceedSpeedOldChunksBurst(WrappedPlayer wrappedPlayer);
-    public abstract void onPlayerFlyOldChunksBurst(WrappedPlayer wrappedPlayer);
-    public abstract void onPlayerExceedSpeedOldChunks(WrappedPlayer wrappedPlayer);
-    public abstract void onPlayerFlyOldChunks(WrappedPlayer wrappedPlayer);
 
     public @Nullable LocationConfig getConfigAt(Location location) {
         for (LocationConfig locationConfig : configuredLocations) {
@@ -108,7 +76,29 @@ public abstract class SpeedLimitModule implements Enableable, Disableable {
         return null;
     }
 
-    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+    public static void disableAll() {
+        ENABLED_MODULES.forEach((flightType1, speedLimitModule) -> speedLimitModule.disable());
+        ENABLED_MODULES.clear();
+    }
+
+    public static void reloadModules() {
+        disableAll();
+
+        for (Class<SpeedLimitModule> moduleClass : AVAILABLE_MODULES) {
+            try {
+                SpeedLimitModule module = moduleClass.getDeclaredConstructor().newInstance();
+                if (module.shouldEnable()) {
+                    ENABLED_MODULES.put(module.getFlightType(), module);
+                }
+            } catch (Throwable t) { // We want to catch everything here if it fails to init
+                FlySpeedLimits.logger().warn("Failed initialising module class '{}'.", moduleClass.getSimpleName(), t);
+            }
+        }
+
+        ENABLED_MODULES.forEach((flightType1, speedLimitModule) -> speedLimitModule.enable());
+    }
+
+    @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = false)
     public void on(PlayerMoveEvent event) {
         WrappedPlayer wrappedPlayer = PlayerManager.getPlayer(event);
         if (!checkPreconditions(wrappedPlayer)) return;
@@ -157,6 +147,17 @@ public abstract class SpeedLimitModule implements Enableable, Disableable {
             }
         }
     }
+
+    public abstract boolean checkPreconditions(WrappedPlayer wrappedPlayer);
+    public abstract void onPlayerFlightDenied(WrappedPlayer wrappedPlayer);
+    public abstract void onPlayerExceedSpeedNewChunksBurst(WrappedPlayer wrappedPlayer);
+    public abstract void onPlayerFlyNewChunksBurst(WrappedPlayer wrappedPlayer);
+    public abstract void onPlayerExceedSpeedNewChunks(WrappedPlayer wrappedPlayer);
+    public abstract void onPlayerFlyNewChunks(WrappedPlayer wrappedPlayer);
+    public abstract void onPlayerExceedSpeedOldChunksBurst(WrappedPlayer wrappedPlayer);
+    public abstract void onPlayerFlyOldChunksBurst(WrappedPlayer wrappedPlayer);
+    public abstract void onPlayerExceedSpeedOldChunks(WrappedPlayer wrappedPlayer);
+    public abstract void onPlayerFlyOldChunks(WrappedPlayer wrappedPlayer);
 
     protected void error(String message, Throwable throwable) {
         FlySpeedLimits.logger().error(logFormat, message, throwable);

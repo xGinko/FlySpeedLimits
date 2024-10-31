@@ -4,7 +4,7 @@ import com.cryptomorin.xseries.XMaterial;
 import com.github.retrooper.packetevents.util.Vector3d;
 import io.papermc.lib.PaperLib;
 import me.xginko.flyspeedlimits.FlySpeedLimits;
-import me.xginko.flyspeedlimits.events.WrappedPlayerUpdateEvent;
+import me.xginko.flyspeedlimits.events.AsyncWrappedPlayerUpdateEvent;
 import me.xginko.flyspeedlimits.struct.Lazy;
 import me.xginko.flyspeedlimits.struct.SpeedUnit;
 import me.xginko.flyspeedlimits.utils.MathHelper;
@@ -14,7 +14,6 @@ import net.kyori.adventure.title.Title;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
-import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 
@@ -23,27 +22,22 @@ import java.util.concurrent.CompletableFuture;
 public class WrappedPlayer {
 
     public final @NotNull Player player;
+
     public final @NotNull Location periodicFrom;
     public final @NotNull Location mostRecentTo;
 
-    private @NotNull FlyingState flyingState;
-    private boolean inNewChunks;
+    private final Lazy<Double> blocksPerSecXZSquared, blocksPerTickXZSquared, blocksPerSecYSquared, blocksPerTickYSquared;
+    private final Lazy<Float> blocksPerSecXZ, blocksPerTickXZ, blocksPerSecY, blocksPerTickY;
 
     private double distanceXZSquared;
     private double distanceYSquared;
 
-    private final Lazy<Double> blocksPerSecXZSquared, blocksPerTickXZSquared, blocksPerSecYSquared, blocksPerTickYSquared;
-    private final Lazy<Float> blocksPerSecXZ, blocksPerTickXZ, blocksPerSecY, blocksPerTickY;
+    private boolean inNewChunks;
 
     private WrappedPlayer(@NotNull Player player, @NotNull Location from, @NotNull Location to) {
         this.player = player;
         this.periodicFrom = from;
         this.mostRecentTo = to;
-        this.flyingState = FlyingState.NONE;
-        this.inNewChunks = false;
-
-        this.distanceXZSquared = 0.0D;
-        this.distanceYSquared = 0.0D;
 
         this.blocksPerSecXZSquared = Lazy.of(() -> SpeedUnit.BLOCKS_PER_SECOND.fromDistance(getDistanceXZSquared()));
         this.blocksPerSecXZ = Lazy.of(() -> MathHelper.quakeSqrt(blocksPerSecXZSquared.get().floatValue()));
@@ -54,6 +48,10 @@ public class WrappedPlayer {
         this.blocksPerSecY = Lazy.of(() -> MathHelper.quakeSqrt(blocksPerSecYSquared.get().floatValue()));
         this.blocksPerTickYSquared = Lazy.of(() -> SpeedUnit.BLOCKS_PER_TICK.fromDistance(getDistanceYSquared()));
         this.blocksPerTickY = Lazy.of(() -> MathHelper.quakeSqrt(blocksPerTickYSquared.get().floatValue()));
+
+        this.distanceXZSquared = 0.0D;
+        this.distanceYSquared = 0.0D;
+        this.inNewChunks = false;
     }
 
     protected static @NotNull WrappedPlayer of(@NotNull Player player, @NotNull Location from, @NotNull Location to) {
@@ -73,7 +71,7 @@ public class WrappedPlayer {
     }
 
     public CompletableFuture<Boolean> teleportAsync(Location location) {
-        return PaperLib.teleportAsync(player, location, PlayerTeleportEvent.TeleportCause.PLUGIN);
+        return PaperLib.teleportAsync(player, location);
     }
 
     public void sendMessage(Component component) {
@@ -102,18 +100,6 @@ public class WrappedPlayer {
 
     protected double getDistanceYSquared() {
         return distanceYSquared;
-    }
-
-    public FlyingState getFlyingState() {
-        return flyingState;
-    }
-
-    public boolean isFlying() {
-        return flyingState != FlyingState.NONE;
-    }
-
-    protected void setFlyingState(@NotNull FlyingState flyingState) {
-        this.flyingState = flyingState;
     }
 
     public boolean isInNewChunks() {
@@ -154,7 +140,7 @@ public class WrappedPlayer {
         blocksPerSecY.clear();
         blocksPerTickY.clear();
 
-        Bukkit.getPluginManager().callEvent(new WrappedPlayerUpdateEvent(this));
+        Bukkit.getPluginManager().callEvent(new AsyncWrappedPlayerUpdateEvent(this));
 
         // Update from Location for next period
         setPeriodicFrom(mostRecentTo);
@@ -184,12 +170,5 @@ public class WrappedPlayer {
         mostRecentTo.setX(to.getX());
         mostRecentTo.setY(to.getY());
         mostRecentTo.setZ(to.getZ());
-    }
-
-    public enum FlyingState {
-        CREATIVE,
-        ELYTRA,
-        VEHICLE,
-        NONE
     }
 }

@@ -1,7 +1,7 @@
 package me.xginko.flyspeedlimits.manager;
 
 import me.xginko.flyspeedlimits.FlySpeedLimits;
-import me.xginko.flyspeedlimits.events.WrappedPlayerUpdateEvent;
+import me.xginko.flyspeedlimits.events.AsyncWrappedPlayerUpdateEvent;
 import me.xginko.flyspeedlimits.struct.Disableable;
 import me.xginko.flyspeedlimits.struct.Enableable;
 import me.xginko.flyspeedlimits.utils.Crafty;
@@ -43,7 +43,7 @@ public class ChunkListener implements Enableable, Disableable, Listener {
     }
 
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
-    private void on(WrappedPlayerUpdateEvent event) {
+    private void on(AsyncWrappedPlayerUpdateEvent event) {
         WrappedPlayer wrappedPlayer = event.getWrappedPlayer();
 
         if (GET_INHABITED_TIME_AVAILABLE) {
