@@ -8,6 +8,8 @@ import me.xginko.flyspeedlimits.manager.PlayerManager;
 import me.xginko.flyspeedlimits.manager.WrappedPlayer;
 import me.xginko.flyspeedlimits.struct.Disableable;
 import me.xginko.flyspeedlimits.struct.Enableable;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.core.config.Configurator;
 import org.bukkit.Location;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -31,6 +33,8 @@ public abstract class SpeedLimitModule implements Enableable, Disableable {
     protected static final Map<FlightType, SpeedLimitModule> ENABLED_MODULES;
 
     static {
+        // Disable reflection logging for this operation because its just confusing and provides no value.
+        Configurator.setLevel(FlySpeedLimits.class.getPackage().getName() + ".libs.reflections.Reflections", Level.OFF);
         AVAILABLE_MODULES = new Reflections(SpeedLimitModule.class.getPackage().getName())
                 .get(Scanners.SubTypes.of(SpeedLimitModule.class).asClass())
                 .stream()
