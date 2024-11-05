@@ -47,19 +47,19 @@ public class FlightConfig {
 
     public boolean shouldDenyDueToLag() {
         return  denyDuringLowTPS
-                && (FlySpeedLimits.getTickReporter().getTPS() < denyTPS
-                || FlySpeedLimits.getTickReporter().getMSPT() > denyMSPT);
+                && (FlySpeedLimits.tickReporter().getTPS() < denyTPS
+                || FlySpeedLimits.tickReporter().getMSPT() > denyMSPT);
     }
 
     public boolean canBurstOldChunks() {
         return  oldChunksXZBurstEnabled
-                && FlySpeedLimits.getTickReporter().getTPS() >= oldChunksBurstTPS
-                && FlySpeedLimits.getTickReporter().getMSPT() <= oldChunksBurstMSPT;
+                && FlySpeedLimits.tickReporter().getTPS() >= oldChunksBurstTPS
+                && FlySpeedLimits.tickReporter().getMSPT() <= oldChunksBurstMSPT;
     }
 
     public boolean canBurstNewChunks() {
         return  newChunksXZBurstEnabled
-                && FlySpeedLimits.getTickReporter().getTPS() >= newChunksBurstTPS
-                && FlySpeedLimits.getTickReporter().getMSPT() <= newChunksBurstMSPT;
+                && FlySpeedLimits.tickReporter().getTPS() >= newChunksBurstTPS
+                && FlySpeedLimits.tickReporter().getMSPT() <= newChunksBurstMSPT;
     }
 }

@@ -1,5 +1,6 @@
 package me.xginko.flyspeedlimits.utils;
 
+import org.bukkit.Chunk;
 import org.jetbrains.annotations.NotNull;
 
 import java.time.Duration;
@@ -27,5 +28,9 @@ public class GeneralUtil {
         } else {
             return String.format("%02ds", (int) (duration.getSeconds() % 60));
         }
+    }
+
+    public static boolean isRetrievalUnsafe(Chunk chunk) {
+        return chunk.getX() > 1875000 || chunk.getZ() > 1875000 || chunk.getX() < -1875000 || chunk.getZ() < -1875000;
     }
 }

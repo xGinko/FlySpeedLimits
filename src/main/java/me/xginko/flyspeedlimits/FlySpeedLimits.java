@@ -142,7 +142,7 @@ public final class FlySpeedLimits extends JavaPlugin {
         return config;
     }
 
-    public static TickReporter getTickReporter() {
+    public static TickReporter tickReporter() {
         return tickReporter;
     }
 
@@ -163,7 +163,7 @@ public final class FlySpeedLimits extends JavaPlugin {
     }
 
     public static @NotNull LanguageCache getLang(CommandSender commandSender) {
-        return getLang(audiences.sender(commandSender).pointers().get(Identity.LOCALE).orElse(FlySpeedLimits.config().default_locale));
+        return getLang(audiences.sender(commandSender).pointers().get(Identity.LOCALE).orElse(config.default_locale));
     }
 
     public static @NotNull LanguageCache getLang(String lang) {

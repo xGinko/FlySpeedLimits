@@ -36,7 +36,7 @@ repositories {
 dependencies {
     paperweight.foliaDevBundle("1.20.6-R0.1-SNAPSHOT");
 
-    compileOnly("com.github.retrooper:packetevents-spigot:2.5.0")
+    compileOnly("com.github.retrooper:packetevents-spigot:2.6.0")
     compileOnly("org.apache.logging.log4j:log4j-core:2.23.1")
 
     implementation("com.github.thatsmusic99:ConfigurationMaster-API:v2.0.0-rc.1")
@@ -49,6 +49,7 @@ dependencies {
     implementation("com.github.cryptomorin:XSeries:11.3.0")
     implementation("org.bstats:bstats-bukkit:3.0.2")
 
+    implementation("net.kyori:adventure-api:4.17.0")
     implementation("net.kyori:adventure-text-serializer-ansi:4.17.0")
     implementation("net.kyori:adventure-text-logger-slf4j:4.17.0")
     implementation("net.kyori:adventure-text-minimessage:4.17.0")

@@ -50,6 +50,8 @@ public class ElytraSpeedLimit extends SpeedLimitModule implements Listener {
     public void onPlayerFlightDenied(WrappedPlayer wrappedPlayer) {
         wrappedPlayer.teleportAsync(wrappedPlayer.periodicFrom);
         wrappedPlayer.dropElytra();
+
+
     }
 
     @Override
