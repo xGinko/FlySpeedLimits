@@ -4,6 +4,7 @@ import com.cryptomorin.xseries.XMaterial;
 import com.github.retrooper.packetevents.util.Vector3d;
 import io.papermc.lib.PaperLib;
 import me.xginko.flyspeedlimits.FlySpeedLimits;
+import me.xginko.flyspeedlimits.config.LanguageCache;
 import me.xginko.flyspeedlimits.events.AsyncWrappedPlayerUpdateEvent;
 import me.xginko.flyspeedlimits.struct.Lazy;
 import me.xginko.flyspeedlimits.struct.SpeedUnit;
@@ -68,6 +69,10 @@ public class WrappedPlayer {
             player.getInventory().setChestplate(null);
             player.getWorld().dropItem(player.getLocation(), chestplate);
         }
+    }
+
+    public LanguageCache translations() {
+        return FlySpeedLimits.getLang(player);
     }
 
     public CompletableFuture<Boolean> teleportAsync(Location location) {

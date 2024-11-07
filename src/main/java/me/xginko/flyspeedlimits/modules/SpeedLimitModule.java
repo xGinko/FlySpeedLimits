@@ -105,30 +105,30 @@ public abstract class SpeedLimitModule implements Enableable, Disableable {
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = false)
     public void on(PlayerMoveEvent event) {
         WrappedPlayer wrappedPlayer = PlayerManager.getPlayer(event);
-        if (!checkPreconditions(wrappedPlayer)) return;
+        if (!isFlying(wrappedPlayer)) return;
 
         LocationConfig locationConfig = getConfigAt(wrappedPlayer.player.getLocation());
         if (locationConfig == null) return;
 
         if (locationConfig.flight.denyFlight || locationConfig.flight.shouldDenyDueToLag()) {
-            onPlayerFlightDenied(wrappedPlayer);
+            onPlayerFlightDenied(wrappedPlayer, locationConfig);
             return;
         }
 
         if (wrappedPlayer.isInNewChunks()) {
             if (locationConfig.flight.canBurstNewChunks()) {
                 if (wrappedPlayer.getXZSpeedSquared(locationConfig.flight.speedUnit) > locationConfig.flight.newChunksXZBurstSpeed) {
-                    onPlayerExceedSpeedNewChunksBurst(wrappedPlayer);
+                    onPlayerExceedSpeedNewChunksBurst(wrappedPlayer, locationConfig);
                 } else {
-                    onPlayerFlyNewChunksBurst(wrappedPlayer);
+                    onPlayerFlyNewChunksBurst(wrappedPlayer, locationConfig);
                 }
             }
 
             else {
                 if (wrappedPlayer.getXZSpeedSquared(locationConfig.flight.speedUnit) > locationConfig.flight.newChunksXZSpeed) {
-                    onPlayerExceedSpeedNewChunks(wrappedPlayer);
+                    onPlayerExceedSpeedNewChunks(wrappedPlayer, locationConfig);
                 } else {
-                    onPlayerFlyNewChunks(wrappedPlayer);
+                    onPlayerFlyNewChunks(wrappedPlayer, locationConfig);
                 }
             }
         }
@@ -136,32 +136,32 @@ public abstract class SpeedLimitModule implements Enableable, Disableable {
         else {
             if (locationConfig.flight.canBurstOldChunks()) {
                 if (wrappedPlayer.getXZSpeedSquared(locationConfig.flight.speedUnit) > locationConfig.flight.oldChunksXZBurstSpeed) {
-                    onPlayerExceedSpeedOldChunksBurst(wrappedPlayer);
+                    onPlayerExceedSpeedOldChunksBurst(wrappedPlayer, locationConfig);
                 } else {
-                    onPlayerFlyOldChunksBurst(wrappedPlayer);
+                    onPlayerFlyOldChunksBurst(wrappedPlayer, locationConfig);
                 }
             }
 
             else {
                 if (wrappedPlayer.getXZSpeedSquared(locationConfig.flight.speedUnit) > locationConfig.flight.oldChunksXZSpeed) {
-                    onPlayerExceedSpeedOldChunks(wrappedPlayer);
+                    onPlayerExceedSpeedOldChunks(wrappedPlayer, locationConfig);
                 } else {
-                    onPlayerFlyOldChunks(wrappedPlayer);
+                    onPlayerFlyOldChunks(wrappedPlayer, locationConfig);
                 }
             }
         }
     }
 
-    public abstract boolean checkPreconditions(WrappedPlayer wrappedPlayer);
-    public abstract void onPlayerFlightDenied(WrappedPlayer wrappedPlayer);
-    public abstract void onPlayerExceedSpeedNewChunksBurst(WrappedPlayer wrappedPlayer);
-    public abstract void onPlayerFlyNewChunksBurst(WrappedPlayer wrappedPlayer);
-    public abstract void onPlayerExceedSpeedNewChunks(WrappedPlayer wrappedPlayer);
-    public abstract void onPlayerFlyNewChunks(WrappedPlayer wrappedPlayer);
-    public abstract void onPlayerExceedSpeedOldChunksBurst(WrappedPlayer wrappedPlayer);
-    public abstract void onPlayerFlyOldChunksBurst(WrappedPlayer wrappedPlayer);
-    public abstract void onPlayerExceedSpeedOldChunks(WrappedPlayer wrappedPlayer);
-    public abstract void onPlayerFlyOldChunks(WrappedPlayer wrappedPlayer);
+    public abstract boolean isFlying(WrappedPlayer wrappedPlayer);
+    public abstract void onPlayerFlightDenied(WrappedPlayer wrappedPlayer, LocationConfig locationConfig);
+    public abstract void onPlayerExceedSpeedNewChunksBurst(WrappedPlayer wrappedPlayer, LocationConfig locationConfig);
+    public abstract void onPlayerFlyNewChunksBurst(WrappedPlayer wrappedPlayer, LocationConfig locationConfig);
+    public abstract void onPlayerExceedSpeedNewChunks(WrappedPlayer wrappedPlayer, LocationConfig locationConfig);
+    public abstract void onPlayerFlyNewChunks(WrappedPlayer wrappedPlayer, LocationConfig locationConfig);
+    public abstract void onPlayerExceedSpeedOldChunksBurst(WrappedPlayer wrappedPlayer, LocationConfig locationConfig);
+    public abstract void onPlayerFlyOldChunksBurst(WrappedPlayer wrappedPlayer, LocationConfig locationConfig);
+    public abstract void onPlayerExceedSpeedOldChunks(WrappedPlayer wrappedPlayer, LocationConfig locationConfig);
+    public abstract void onPlayerFlyOldChunks(WrappedPlayer wrappedPlayer, LocationConfig locationConfig);
 
     protected void error(String message, Throwable throwable) {
         FlySpeedLimits.logger().error(logFormat, message, throwable);

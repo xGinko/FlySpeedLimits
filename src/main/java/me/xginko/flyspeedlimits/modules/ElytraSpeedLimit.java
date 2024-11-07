@@ -3,12 +3,14 @@ package me.xginko.flyspeedlimits.modules;
 import com.cryptomorin.xseries.XEntityType;
 import com.cryptomorin.xseries.XMaterial;
 import com.github.benmanes.caffeine.cache.Caffeine;
+import me.xginko.flyspeedlimits.config.LocationConfig;
 import me.xginko.flyspeedlimits.manager.WrappedPlayer;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityToggleGlideEvent;
+import org.bukkit.util.Vector;
 
 import java.time.Duration;
 import java.util.Collections;
@@ -41,60 +43,64 @@ public class ElytraSpeedLimit extends SpeedLimitModule implements Listener {
     }
 
     @Override
-    public boolean checkPreconditions(WrappedPlayer wrappedPlayer) {
+    public boolean isFlying(WrappedPlayer wrappedPlayer) {
         return  wrappedPlayer.player.isGliding()
                 || packetFlyListener.hasRecentlyToggledGlide(wrappedPlayer.player.getUniqueId());
     }
 
     @Override
-    public void onPlayerFlightDenied(WrappedPlayer wrappedPlayer) {
+    public void onPlayerFlightDenied(WrappedPlayer wrappedPlayer, LocationConfig locationConfig) {
+        wrappedPlayer.player.setVelocity(new Vector());
         wrappedPlayer.teleportAsync(wrappedPlayer.periodicFrom);
         wrappedPlayer.dropElytra();
+    }
 
+    @Override
+    public void onPlayerExceedSpeedNewChunksBurst(WrappedPlayer wrappedPlayer, LocationConfig locationConfig) {
+        wrappedPlayer.sendMessage(wrappedPlayer.translations().new_chunks_burst_exceed
+                .get(flightType, wrappedPlayer.getXZSpeed(locationConfig.flight.speedUnit), locationConfig.flight.newChunksXZBurstSpeed));
+        wrappedPlayer.teleportAsync(wrappedPlayer.periodicFrom);
+    }
+
+    @Override
+    public void onPlayerFlyNewChunksBurst(WrappedPlayer wrappedPlayer, LocationConfig locationConfig) {
+
+
+        wrappedPlayer.player.getVelocity();
+    }
+
+    @Override
+    public void onPlayerExceedSpeedNewChunks(WrappedPlayer wrappedPlayer, LocationConfig locationConfig) {
 
     }
 
     @Override
-    public void onPlayerExceedSpeedNewChunksBurst(WrappedPlayer wrappedPlayer) {
+    public void onPlayerFlyNewChunks(WrappedPlayer wrappedPlayer, LocationConfig locationConfig) {
 
     }
 
     @Override
-    public void onPlayerFlyNewChunksBurst(WrappedPlayer wrappedPlayer) {
+    public void onPlayerExceedSpeedOldChunksBurst(WrappedPlayer wrappedPlayer, LocationConfig locationConfig) {
 
     }
 
     @Override
-    public void onPlayerExceedSpeedNewChunks(WrappedPlayer wrappedPlayer) {
+    public void onPlayerFlyOldChunksBurst(WrappedPlayer wrappedPlayer, LocationConfig locationConfig) {
 
     }
 
     @Override
-    public void onPlayerFlyNewChunks(WrappedPlayer wrappedPlayer) {
+    public void onPlayerExceedSpeedOldChunks(WrappedPlayer wrappedPlayer, LocationConfig locationConfig) {
 
     }
 
     @Override
-    public void onPlayerExceedSpeedOldChunksBurst(WrappedPlayer wrappedPlayer) {
-
-    }
-
-    @Override
-    public void onPlayerFlyOldChunksBurst(WrappedPlayer wrappedPlayer) {
-
-    }
-
-    @Override
-    public void onPlayerExceedSpeedOldChunks(WrappedPlayer wrappedPlayer) {
-
-    }
-
-    @Override
-    public void onPlayerFlyOldChunks(WrappedPlayer wrappedPlayer) {
+    public void onPlayerFlyOldChunks(WrappedPlayer wrappedPlayer, LocationConfig locationConfig) {
 
     }
 
     private static class ElytraPacketFlyListener implements Listener {
+        // Yeah maybe this is a bit of a lazy solution. Could there be a better pattern to look for maybe?
 
         private final Set<UUID> toggleGlideCache;
 

@@ -4,6 +4,7 @@ import org.bukkit.Chunk;
 import org.jetbrains.annotations.NotNull;
 
 import java.time.Duration;
+import java.util.Locale;
 import java.util.Random;
 
 public class GeneralUtil {
@@ -32,5 +33,9 @@ public class GeneralUtil {
 
     public static boolean isRetrievalUnsafe(Chunk chunk) {
         return chunk.getX() > 1875000 || chunk.getZ() > 1875000 || chunk.getX() < -1875000 || chunk.getZ() < -1875000;
+    }
+
+    public static String formatDouble(double number) {
+        return String.format(Locale.US, "%.2f", number);
     }
 }

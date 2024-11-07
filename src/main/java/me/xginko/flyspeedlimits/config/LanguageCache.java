@@ -3,8 +3,11 @@ package me.xginko.flyspeedlimits.config;
 import io.github.thatsmusic99.configurationmaster.api.ConfigFile;
 import io.github.thatsmusic99.configurationmaster.api.Title;
 import me.xginko.flyspeedlimits.FlySpeedLimits;
+import me.xginko.flyspeedlimits.modules.FlightType;
+import me.xginko.flyspeedlimits.utils.GeneralUtil;
 import me.xginko.flyspeedlimits.utils.KyoriUtil;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.TextReplacementConfig;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -21,7 +24,7 @@ public final class LanguageCache {
 
     public final @NotNull List<Component> cmd_no_permission;
 
-    public final @NotNull Component new_chunks_burst_flight, new_chunks_burst_exceed, new_chunks_flight, new_chunks_exceed,
+    public final @NotNull Translation new_chunks_burst_flight, new_chunks_burst_exceed, new_chunks_flight, new_chunks_exceed,
         old_chunks_burst_flight, old_chunks_burst_exceed, old_chunks_flight, old_chunks_exceed;
 
     public LanguageCache(@NotNull String langString) throws Exception {
@@ -75,14 +78,14 @@ public final class LanguageCache {
         }
     }
 
-    private @NotNull Component getTranslation(@NotNull String path, @NotNull String defaultTranslation) {
+    private @NotNull LanguageCache.Translation getTranslation(@NotNull String path, @NotNull String defaultTranslation) {
         this.langFile.addDefault(path, defaultTranslation);
-        return MiniMessage.miniMessage().deserialize(KyoriUtil.replaceAmpersand(this.langFile.getString(path, defaultTranslation)));
+        return new Translation(MiniMessage.miniMessage().deserialize(KyoriUtil.replaceAmpersand(this.langFile.getString(path, defaultTranslation))));
     }
 
-    private @NotNull Component getTranslation(@NotNull String path, @NotNull String defaultTranslation, @NotNull String comment) {
+    private @NotNull LanguageCache.Translation getTranslation(@NotNull String path, @NotNull String defaultTranslation, @NotNull String comment) {
         this.langFile.addDefault(path, defaultTranslation, comment);
-        return MiniMessage.miniMessage().deserialize(KyoriUtil.replaceAmpersand(this.langFile.getString(path, defaultTranslation)));
+        return new Translation(MiniMessage.miniMessage().deserialize(KyoriUtil.replaceAmpersand(this.langFile.getString(path, defaultTranslation))));
     }
 
     private @NotNull List<Component> getListTranslation(@NotNull String path, @NotNull List<String> defaultTranslation) {
@@ -93,5 +96,38 @@ public final class LanguageCache {
     private @NotNull List<Component> getListTranslation(@NotNull String path, @NotNull List<String> defaultTranslation, @NotNull String comment) {
         this.langFile.addDefault(path, defaultTranslation, comment);
         return this.langFile.getStringList(path).stream().map(KyoriUtil::replaceAmpersand).map(MiniMessage.miniMessage()::deserialize).collect(Collectors.toList());
+    }
+
+    public static class Translation {
+
+        private final Component component;
+
+        public Translation(Component component) {
+            this.component = component;
+        }
+
+        public Component get(FlightType flightType, double speed, double maxSpeed) {
+            return component
+                    .replaceText(TextReplacementConfig.builder()
+                            .matchLiteral("%flighttype%")
+                            .replacement(flightType.name())
+                            .build())
+                    .replaceText(TextReplacementConfig.builder()
+                            .matchLiteral("%speed%")
+                            .replacement(GeneralUtil.formatDouble(speed))
+                            .build())
+                    .replaceText(TextReplacementConfig.builder()
+                            .matchLiteral("%maxspeed%")
+                            .replacement(GeneralUtil.formatDouble(maxSpeed))
+                            .build())
+                    .replaceText(TextReplacementConfig.builder()
+                            .matchLiteral("%tps%")
+                            .replacement(GeneralUtil.formatDouble(FlySpeedLimits.tickReporter().getTPS()))
+                            .build())
+                    .replaceText(TextReplacementConfig.builder()
+                            .matchLiteral("%mspt%")
+                            .replacement(GeneralUtil.formatDouble(FlySpeedLimits.tickReporter().getMSPT()))
+                            .build());
+        }
     }
 }
