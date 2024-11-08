@@ -1,9 +1,13 @@
 package me.xginko.flyspeedlimits.config;
 
+import com.cryptomorin.xseries.XSound;
 import me.xginko.flyspeedlimits.FlySpeedLimits;
 import me.xginko.flyspeedlimits.struct.SpeedUnit;
+import org.bukkit.Sound;
 
 public class FlightConfig {
+
+    public final Sound stopSound;
 
     public final SpeedUnit speedUnit;
 
@@ -15,6 +19,14 @@ public class FlightConfig {
 
     public FlightConfig(String configPath) {
         Config config = FlySpeedLimits.config();
+        Sound configuredSound;
+        try {
+            configuredSound = Sound.valueOf(config.getString(configPath + ".notification-sound", "ENTITY_EXPERIENCE_ORB_PICKUP"));
+        } catch (IllegalArgumentException e) {
+            configuredSound = XSound.ENTITY_EXPERIENCE_ORB_PICKUP.parseSound();
+        }
+        this.stopSound = configuredSound;
+
         this.denyFlight = config.getBoolean(configPath + ".deny-flight.fully", false);
         this.denyDuringLowTPS = config.getBoolean(configPath + ".deny-flight.during-server-lag.enable", true);
         this.denyTPS = config.getDouble(configPath + ".deny-flight.during-server-lag.tps-limit", 12.0);

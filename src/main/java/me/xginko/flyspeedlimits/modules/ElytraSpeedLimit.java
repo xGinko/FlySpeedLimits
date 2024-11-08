@@ -64,39 +64,47 @@ public class ElytraSpeedLimit extends SpeedLimitModule implements Listener {
 
     @Override
     public void onPlayerFlyNewChunksBurst(WrappedPlayer wrappedPlayer, LocationConfig locationConfig) {
-
-
-        wrappedPlayer.player.getVelocity();
+        wrappedPlayer.sendMessage(wrappedPlayer.translations().new_chunks_burst_flight
+                .get(flightType, wrappedPlayer.getXZSpeed(locationConfig.flight.speedUnit), locationConfig.flight.newChunksXZBurstSpeed));
     }
 
     @Override
     public void onPlayerExceedSpeedNewChunks(WrappedPlayer wrappedPlayer, LocationConfig locationConfig) {
-
+        wrappedPlayer.sendMessage(wrappedPlayer.translations().new_chunks_exceed
+                .get(flightType, wrappedPlayer.getXZSpeed(locationConfig.flight.speedUnit), locationConfig.flight.newChunksXZBurstSpeed));
+        wrappedPlayer.teleportAsync(wrappedPlayer.periodicFrom);
     }
 
     @Override
     public void onPlayerFlyNewChunks(WrappedPlayer wrappedPlayer, LocationConfig locationConfig) {
-
+        wrappedPlayer.sendMessage(wrappedPlayer.translations().new_chunks_flight
+                .get(flightType, wrappedPlayer.getXZSpeed(locationConfig.flight.speedUnit), locationConfig.flight.newChunksXZBurstSpeed));
     }
 
     @Override
     public void onPlayerExceedSpeedOldChunksBurst(WrappedPlayer wrappedPlayer, LocationConfig locationConfig) {
-
+        wrappedPlayer.sendMessage(wrappedPlayer.translations().old_chunks_burst_exceed
+                .get(flightType, wrappedPlayer.getXZSpeed(locationConfig.flight.speedUnit), locationConfig.flight.newChunksXZBurstSpeed));
+        wrappedPlayer.teleportAsync(wrappedPlayer.periodicFrom);
     }
 
     @Override
     public void onPlayerFlyOldChunksBurst(WrappedPlayer wrappedPlayer, LocationConfig locationConfig) {
-
+        wrappedPlayer.sendMessage(wrappedPlayer.translations().old_chunks_burst_flight
+                .get(flightType, wrappedPlayer.getXZSpeed(locationConfig.flight.speedUnit), locationConfig.flight.newChunksXZBurstSpeed));
     }
 
     @Override
     public void onPlayerExceedSpeedOldChunks(WrappedPlayer wrappedPlayer, LocationConfig locationConfig) {
-
+        wrappedPlayer.sendMessage(wrappedPlayer.translations().old_chunks_exceed
+                .get(flightType, wrappedPlayer.getXZSpeed(locationConfig.flight.speedUnit), locationConfig.flight.newChunksXZBurstSpeed));
+        wrappedPlayer.teleportAsync(wrappedPlayer.periodicFrom);
     }
 
     @Override
     public void onPlayerFlyOldChunks(WrappedPlayer wrappedPlayer, LocationConfig locationConfig) {
-
+        wrappedPlayer.sendMessage(wrappedPlayer.translations().old_chunks_flight
+                .get(flightType, wrappedPlayer.getXZSpeed(locationConfig.flight.speedUnit), locationConfig.flight.newChunksXZBurstSpeed));
     }
 
     private static class ElytraPacketFlyListener implements Listener {
